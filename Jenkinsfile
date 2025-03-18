@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Lấy mã nguồn từ Git repository; thay đổi branch nếu cần (ví dụ: main hoặc master)
-                git url: 'https://github.com/argargargtbn01/mos-fe.git', branch: 'main'
+                git url: 'https://github.com/argargargtbn01/mos-fe.git', branch: 'master'
             }
         }
         stage('Install Dependencies') {
