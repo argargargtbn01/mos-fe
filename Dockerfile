@@ -24,8 +24,7 @@ WORKDIR /app
 # Copy toàn bộ dữ liệu từ giai đoạn build
 COPY --from=builder /app ./
 
-# Expose port mà ứng dụng chạy (thường là 3000)
-EXPOSE 3000
 
-# Chạy ứng dụng ở chế độ production (chạy lệnh "next start")
 CMD ["npm", "start"]
+
+EXPOSE 3000

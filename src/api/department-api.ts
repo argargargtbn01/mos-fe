@@ -20,7 +20,7 @@ export class DepartmentService {
    */
   async getDepartments(): Promise<Department[]> {
     const response = await axiosInstance.get<Department[]>(this.baseUrl);
-    return response;
+    return response.data;
   }
 
   /**
@@ -28,7 +28,7 @@ export class DepartmentService {
    */
   async getDepartmentById(id: number): Promise<Department> {
     const response = await axiosInstance.get<Department>(`${this.baseUrl}/${id}`);
-    return response;
+    return response.data;
   }
 
   /**
@@ -36,7 +36,7 @@ export class DepartmentService {
    */
   async createDepartment(data: CreateDepartmentDto): Promise<Department> {
     const response = await axiosInstance.post<Department>(this.baseUrl, data);
-    return response;
+    return response.data;
   }
 
   /**
@@ -44,7 +44,7 @@ export class DepartmentService {
    */
   async updateDepartment(id: number, data: UpdateDepartmentDto): Promise<Department> {
     const response = await axiosInstance.patch<Department>(`${this.baseUrl}/${id}`, data);
-    return response;  
+    return response.data;  
   }
 
   /**

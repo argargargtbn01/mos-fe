@@ -1,8 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
-const baseURL ='http://localhost:5000';
-// const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-
+// const baseURL ='http://localhost:3003';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003'
 const axiosInstance = axios.create({
   baseURL,
   headers: {
@@ -22,15 +21,15 @@ axiosInstance.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error)
 );
 
-// Response interceptor: Trả về luôn dữ liệu từ response và xử lý lỗi 401
-axiosInstance.interceptors.response.use(
-  (response: AxiosResponse) => response.data,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
+// // Response interceptor: Trả về luôn dữ liệu từ response và xử lý lỗi 401
+// axiosInstance.interceptors.response.use(
+//   (response: AxiosResponse) => response.data,
+//   (error: AxiosError) => {
+//     if (error.response?.status === 401) {
+//       window.location.href = '/login';
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 export default axiosInstance;

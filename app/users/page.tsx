@@ -23,6 +23,7 @@ export default function UsersPage() {
     const loadUsers = async () => {
       try {
         const data = await userService.getUsers();
+        console.log(data)
         setUsers(data);
       } catch (error) {
         console.error("Lỗi khi lấy danh sách user:", error);
