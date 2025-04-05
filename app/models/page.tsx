@@ -8,7 +8,7 @@ import { Plus, Pencil, Eye, Power } from "lucide-react"
 const models = [
   {
     id: 1,
-    name: "GPT-4",
+    name: "GPT-4o",
     provider: "OpenAI",
     type: "Language Model",
     status: "Active",
@@ -16,7 +16,7 @@ const models = [
   },
   {
     id: 2,
-    name: "BERT Base",
+    name: "Gemini 2.5",
     provider: "Google",
     type: "Language Model",
     status: "Active",
@@ -24,7 +24,7 @@ const models = [
   },
   {
     id: 3,
-    name: "Claude 2",
+    name: "Claude 3.7",
     provider: "Anthropic",
     type: "Language Model",
     status: "Inactive",
