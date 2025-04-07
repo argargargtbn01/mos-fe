@@ -1,16 +1,16 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import MainLayout from "@/components/layout/main-layout"
-import { DataTable } from "@/components/shared/data-table/data-table"
-import { EntityHeader } from "@/components/shared/entity-header"
-import { StatusBadge } from "@/components/shared/status-badge"
-import { ActionButtons } from "@/components/shared/action-buttons"
-import { CrudDialog } from "@/components/shared/crud-dialog"
-import { userService } from "@/src/api/user-api"
-import type { User } from "@/types/user"
-import type { Field } from "@/types/form"
-import { useToast } from "@/hooks/use-toast"
+import { useState, useEffect } from 'react'
+import MainLayout from '@/components/layout/main-layout'
+import { DataTable } from '@/components/shared/data-table/data-table'
+import { EntityHeader } from '@/components/shared/entity-header'
+import { StatusBadge } from '@/components/shared/status-badge'
+import { ActionButtons } from '@/components/shared/action-buttons'
+import { CrudDialog } from '@/components/shared/crud-dialog'
+import { userService } from '@/src/api/user-api'
+import type { User } from '@/types/user'
+import type { Field } from '@/types/form'
+import { useToast } from '@/hooks/use-toast'
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
@@ -28,14 +28,14 @@ export default function UsersPage() {
   const loadUsers = async () => {
     try {
       setLoading(true)
-      const data = await userService.getUsers()
+      const data = await userService.getAll()
       setUsers(data)
     } catch (error) {
-      console.error("Lỗi khi tải danh sách người dùng:", error)
+      console.error('Lỗi khi tải danh sách người dùng:', error)
       toast({
-        title: "Lỗi",
-        description: "Không thể tải danh sách người dùng",
-        variant: "destructive",
+        title: 'Lỗi',
+        description: 'Không thể tải danh sách người dùng',
+        variant: 'destructive',
       })
     } finally {
       setLoading(false)
@@ -44,61 +44,63 @@ export default function UsersPage() {
 
   const handleAddUser = async (data: Record<string, any>) => {
     try {
-      await userService.createUser(data)
+      await userService.create(data)
       toast({
-        title: "Thành công",
-        description: "Thêm người dùng thành công",
+        title: 'Thành công',
+        description: 'Thêm người dùng thành công',
       })
       loadUsers()
       return Promise.resolve()
     } catch (error) {
-      console.error("Lỗi khi thêm người dùng:", error)
+      console.error('Lỗi khi thêm người dùng:', error)
       toast({
-        title: "Lỗi",
-        description: "Không thể thêm người dùng",
-        variant: "destructive",
+        title: 'Lỗi',
+        description: 'Không thể thêm người dùng',
+        variant: 'destructive',
       })
       return Promise.reject(error)
     }
   }
 
   const handleEditUser = async (data: Record<string, any>) => {
-    if (!selectedUser) return Promise.reject("No user selected")
+    if (!selectedUser) return Promise.reject('No user selected')
 
     try {
-      await userService.updateUser(selectedUser.id, data)
+      await userService.update(selectedUser.id, data)
       toast({
-        title: "Thành công",
-        description: "Cập nhật người dùng thành công",
+        title: 'Thành công',
+        description: 'Cập nhật người dùng thành công',
       })
       loadUsers()
       return Promise.resolve()
     } catch (error) {
-      console.error("Lỗi khi cập nhật người dùng:", error)
+      console.error('Lỗi khi cập nhật người dùng:', error)
       toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật người dùng",
-        variant: "destructive",
+        title: 'Lỗi',
+        description: 'Không thể cập nhật người dùng',
+        variant: 'destructive',
       })
       return Promise.reject(error)
     }
   }
 
   const handleDeleteUser = async (user: User) => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa người dùng "${user.username}"?`)) {
+    if (
+      window.confirm(`Bạn có chắc chắn muốn xóa người dùng "${user.username}"?`)
+    ) {
       try {
-        await userService.deleteUser(user.id)
+        await userService.delete(user.id)
         toast({
-          title: "Thành công",
-          description: "Xóa người dùng thành công",
+          title: 'Thành công',
+          description: 'Xóa người dùng thành công',
         })
         loadUsers()
       } catch (error) {
-        console.error("Lỗi khi xóa người dùng:", error)
+        console.error('Lỗi khi xóa người dùng:', error)
         toast({
-          title: "Lỗi",
-          description: "Không thể xóa người dùng",
-          variant: "destructive",
+          title: 'Lỗi',
+          description: 'Không thể xóa người dùng',
+          variant: 'destructive',
         })
       }
     }
@@ -106,94 +108,100 @@ export default function UsersPage() {
 
   const handleToggleUserStatus = async (user: User) => {
     try {
-      const newStatus = user.status === "Active" ? "Inactive" : "Active"
-      await userService.updateUser(user.id, { status: newStatus })
+      const newStatus = user.status === 'Active' ? 'Inactive' : 'Active'
+      await userService.update(user.id, { status: newStatus })
       toast({
-        title: "Thành công",
-        description: `Người dùng đã được ${newStatus === "Active" ? "kích hoạt" : "vô hiệu hóa"}`,
+        title: 'Thành công',
+        description: `Người dùng đã được ${
+          newStatus === 'Active' ? 'kích hoạt' : 'vô hiệu hóa'
+        }`,
       })
       loadUsers()
     } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái người dùng:", error)
+      console.error('Lỗi khi cập nhật trạng thái người dùng:', error)
       toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật trạng thái người dùng",
-        variant: "destructive",
+        title: 'Lỗi',
+        description: 'Không thể cập nhật trạng thái người dùng',
+        variant: 'destructive',
       })
     }
   }
 
   const userFields: Field[] = [
     {
-      name: "username",
-      label: "Tên người dùng",
-      type: "text",
+      name: 'username',
+      label: 'Tên người dùng',
+      type: 'text',
       required: true,
     },
     {
-      name: "email",
-      label: "Email",
-      type: "email",
+      name: 'email',
+      label: 'Email',
+      type: 'email',
       required: true,
     },
     {
-      name: "role",
-      label: "Vai trò",
-      type: "select",
+      name: 'role',
+      label: 'Vai trò',
+      type: 'select',
       options: [
-        { value: "1", label: "Admin" },
-        { value: "2", label: "User" },
-        { value: "3", label: "Manager" },
+        { value: '1', label: 'Admin' },
+        { value: '2', label: 'User' },
+        { value: '3', label: 'Manager' },
       ],
       required: true,
     },
     {
-      name: "department",
-      label: "Phòng ban",
-      type: "select",
+      name: 'department',
+      label: 'Phòng ban',
+      type: 'select',
       options: [
-        { value: "1", label: "IT Department" },
-        { value: "2", label: "HR Department" },
-        { value: "3", label: "Sales Department" },
+        { value: '1', label: 'IT Department' },
+        { value: '2', label: 'HR Department' },
+        { value: '3', label: 'Sales Department' },
       ],
       required: true,
     },
     {
-      name: "status",
-      label: "Trạng thái",
-      type: "select",
+      name: 'status',
+      label: 'Trạng thái',
+      type: 'select',
       options: [
-        { value: "Active", label: "Active" },
-        { value: "Inactive", label: "Inactive" },
+        { value: 'Active', label: 'Active' },
+        { value: 'Inactive', label: 'Inactive' },
       ],
     },
   ]
 
   const columns = [
     {
-      key: "username",
-      header: "Tên",
-      cell: (user: User) => user.username || "không có thông tin",
+      key: 'username',
+      header: 'Tên',
+      cell: (user: User) => user.username || 'không có thông tin',
     },
     {
-      key: "email",
-      header: "Email",
-      cell: (user: User) => user.email || "không có thông tin",
+      key: 'email',
+      header: 'Email',
+      cell: (user: User) => user.email || 'không có thông tin',
     },
     {
-      key: "role",
-      header: "Vai trò",
-      cell: (user: User) => (user.role && user.role.name) || "không có thông tin",
+      key: 'role',
+      header: 'Vai trò',
+      cell: (user: User) =>
+        (user.role && user.role.name) || 'không có thông tin',
     },
     {
-      key: "department",
-      header: "Phòng ban",
-      cell: (user: User) => (user.department && user.department.name) || "không có thông tin",
+      key: 'department',
+      header: 'Phòng ban',
+      cell: (user: User) =>
+        (user.department && user.department.name) || 'không có thông tin',
     },
     {
-      key: "status",
-      header: "Trạng thái",
-      cell: (user: User) => <StatusBadge status={user.status || "không có thông tin"} />,
+      key: 'status',
+      header: 'Trạng thái',
+      cell: (user: User) => (
+        <StatusBadge status={user.status || 'không có thông tin'} />
+      ),
     },
   ]
 
@@ -287,4 +295,3 @@ export default function UsersPage() {
     </MainLayout>
   )
 }
-

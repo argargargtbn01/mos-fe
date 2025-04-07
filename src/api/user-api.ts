@@ -1,62 +1,25 @@
-import { User, CreateUserDto, UpdateUserDto } from '@/types/user'
-import axiosInstance from './axios-config'
+import type { User } from "@/types/user"
+import { BaseApiService } from "./base-api"
 
-export class UserService {
-  private static instance: UserService
-  private readonly baseUrl = '/users'
-
-  private constructor() {}
-
-  // Singleton: đảm bảo chỉ có 1 instance của UserService trong toàn bộ ứng dụng
-  public static getInstance(): UserService {
-    if (!UserService.instance) {
-      UserService.instance = new UserService()
-    }
-    return UserService.instance
+class UserService extends BaseApiService<User> {
+  constructor() {
+    super("/users")
   }
 
-  /**
-   * Lấy danh sách user
-   */
-  async getUsers(): Promise<User[]> {
-    const response = await axiosInstance.get<User[]>(this.baseUrl)
-    return response.data // Trả về trực tiếp mảng User[]
-  }
+  // // Model-specific methods
+  // async getActiveModels(): Promise<LlmModel[]> {
+  //   const response = await this.request<LlmModel[]>("GET", "/active")
+  //   return response
+  // }
 
-  /**
-   * Lấy thông tin 1 user theo ID
-   */
-  async getUserById(id: number): Promise<User> {
-    const response = await axiosInstance.get<User>(`${this.baseUrl}/${id}`)
-    return response.data
-  }
+  // async toggleStatus(id: number, status: string): Promise<LlmModel> {
+  //   return this.update(id, { status })
+  // }
 
-  /**
-   * Tạo mới user
-   */
-  async createUser(data: CreateUserDto): Promise<User> {
-    const response = await axiosInstance.post<User>(this.baseUrl, data)
-    return response.data
-  }
-
-  /**
-   * Cập nhật user
-   */
-  async updateUser(id: number, data: UpdateUserDto): Promise<User> {
-    const response = await axiosInstance.patch<User>(
-      `${this.baseUrl}/${id}`,
-      data
-    )
-    return response.data
-  }
-
-  /**
-   * Xoá user
-   */
-  async deleteUser(id: number): Promise<void> {
-    await axiosInstance.delete(`${this.baseUrl}/${id}`)
-  }
+  // async updateConfigurations(id: number, configurations: any): Promise<LlmModel> {
+  //   return this.update(id, { configurations })
+  // }
 }
 
-// Xuất instance singleton của UserService
-export const userService = UserService.getInstance()
+export const userService = new UserService()
+

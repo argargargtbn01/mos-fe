@@ -1,94 +1,294 @@
-"use client"
+'use client'
 
-import MainLayout from "@/components/layout/main-layout"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Lock, Pencil, Eye } from "lucide-react"
-
-const bots = [
-  { id: 10, name: "BIC hỏi đáp", department: "Default Department", created: "02-07-2024 09:32" },
-  { id: 61, name: "Test_BOT_CC247_Condensed prompt", department: "Default Department", created: "23-08-2024 08:44" },
-  { id: 142, name: "Test bot for ezCode", department: "Default Department", created: "26-11-2024 17:18" },
-  { id: 100, name: "ezCollection - Output response", department: "Collection", created: "12-11-2024 18:06" },
-  { id: 49, name: "Telss", department: "Default Department", created: "19-07-2024 18:44" },
-]
+import { useState, useEffect } from 'react'
+import MainLayout from '@/components/layout/main-layout'
+import { DataTable } from '@/components/shared/data-table/data-table'
+import { EntityHeader } from '@/components/shared/entity-header'
+import { ActionButtons } from '@/components/shared/action-buttons'
+import { CrudDialog } from '@/components/shared/crud-dialog'
+import { botService } from '@/src/api/bot-api'
+import { departmentService } from '@/src/api/department-api'
+import type { Bot } from '@/types/bot'
+import type { Department } from '@/types/department'
+import type { Field } from '@/types/form'
+import { useToast } from '@/hooks/use-toast'
 
 export default function BotsPage() {
+  const [bots, setBots] = useState<Bot[]>([])
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedBot, setSelectedBot] = useState<Bot | null>(null)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    try {
+      setLoading(true)
+      const [botsData, departmentsData] = await Promise.all([
+        botService.getAll(),
+        departmentService.getAll(),
+      ])
+      setBots(botsData)
+      setDepartments(departmentsData)
+    } catch (error) {
+      console.error('Lỗi khi tải dữ liệu:', error)
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể tải dữ liệu',
+        variant: 'destructive',
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAddBot = async (data: Record<string, any>) => {
+    try {
+      const departmentId = Number.parseInt(data.department)
+      // Find the department name from the departments array
+      const departmentName =
+        departments.find((d) => d.id === departmentId)?.name ||
+        'Unknown Department'
+
+      await botService.create({
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        prompt: data.prompt,
+        llmModelId: data.llmModelId,
+        department: { id: departmentId, name: departmentName },
+      })
+
+      toast({
+        title: 'Thành công',
+        description: 'Thêm bot thành công',
+      })
+
+      loadData()
+      return Promise.resolve()
+    } catch (error) {
+      console.error('Lỗi khi thêm bot:', error)
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể thêm bot',
+        variant: 'destructive',
+      })
+      return Promise.reject(error)
+    }
+  }
+
+  const handleEditBot = async (data: Record<string, any>) => {
+    if (!selectedBot) return Promise.reject('No bot selected')
+
+    try {
+      const departmentId = Number.parseInt(data.department)
+      // Find the department name from the departments array
+      const departmentName =
+        departments.find((d) => d.id === departmentId)?.name ||
+        'Unknown Department'
+      await botService.update(selectedBot.id, {
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        prompt: data.prompt,
+        llmModelId: data.llmModelId,
+        department: { id: departmentId, name:departmentName },
+      })
+
+      toast({
+        title: 'Thành công',
+        description: 'Cập nhật bot thành công',
+      })
+
+      loadData()
+      return Promise.resolve()
+    } catch (error) {
+      console.error('Lỗi khi cập nhật bot:', error)
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể cập nhật bot',
+        variant: 'destructive',
+      })
+      return Promise.reject(error)
+    }
+  }
+
+  const handleDeleteBot = async (bot: Bot) => {
+    if (window.confirm(`Bạn có chắc chắn muốn xóa bot "${bot.name}"?`)) {
+      try {
+        await botService.delete(bot.id)
+        toast({
+          title: 'Thành công',
+          description: 'Xóa bot thành công',
+        })
+        loadData()
+      } catch (error) {
+        console.error('Lỗi khi xóa bot:', error)
+        toast({
+          title: 'Lỗi',
+          description: 'Không thể xóa bot',
+          variant: 'destructive',
+        })
+      }
+    }
+  }
+
+  const botFields: Field[] = [
+    {
+      name: 'name',
+      label: 'Tên bot',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'slug',
+      label: 'Slug',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'description',
+      label: 'Mô tả',
+      type: 'textarea',
+    },
+    {
+      name: 'prompt',
+      label: 'Prompt',
+      type: 'textarea',
+    },
+    {
+      name: 'llmModelId',
+      label: 'LLM Model',
+      type: 'text',
+    },
+    {
+      name: 'department',
+      label: 'Phòng ban',
+      type: 'select',
+      options: departments.map((dept) => ({
+        value: dept.id.toString(),
+        label: dept.name,
+      })),
+    },
+  ]
+
+  const columns = [
+    {
+      key: 'id',
+      header: 'ID',
+      cell: (bot: Bot) => bot.id,
+      width: 'w-20',
+    },
+    {
+      key: 'name',
+      header: 'Tên bot',
+      cell: (bot: Bot) => bot.name,
+    },
+    {
+      key: 'department',
+      header: 'Phòng ban',
+      cell: (bot: Bot) => bot.department?.name || 'không có thông tin',
+    },
+    {
+      key: 'created_at',
+      header: 'Ngày tạo',
+      cell: (bot: Bot) => new Date(bot.created_at).toLocaleDateString('vi-VN'),
+    },
+  ]
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="p-6">Đang tải dữ liệu...</div>
+      </MainLayout>
+    )
+  }
+
   return (
     <MainLayout>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Danh sách BOT</h1>
-        <Button className="bg-emerald-600 hover:bg-emerald-700">
-          <Plus className="w-4 h-4 mr-2" />
-          THÊM BOT
-        </Button>
-      </div>
+      <div className="p-6">
+        <EntityHeader
+          title="Danh sách BOT"
+          addButtonLabel="Thêm BOT"
+          onAdd={() => setIsAddDialogOpen(true)}
+        />
 
-      <div className="bg-white rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12">
-                <input type="checkbox" className="rounded border-gray-300" />
-              </TableHead>
-              <TableHead className="w-20">Id</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Phòng ban</TableHead>
-              <TableHead>Created at</TableHead>
-              <TableHead className="w-32">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {bots.map((bot) => (
-              <TableRow key={bot.id}>
-                <TableCell>
-                  <input type="checkbox" className="rounded border-gray-300" />
-                </TableCell>
-                <TableCell>{bot.id}</TableCell>
-                <TableCell>{bot.name}</TableCell>
-                <TableCell>{bot.department}</TableCell>
-                <TableCell>{bot.created}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon">
-                      <Lock className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTable
+          data={bots}
+          columns={columns}
+          onRowSelect={(selectedItems) => console.log(selectedItems)}
+          actions={(bot) => (
+            <ActionButtons
+              onView={() => {
+                setSelectedBot(bot)
+                setIsViewDialogOpen(true)
+              }}
+              onEdit={() => {
+                setSelectedBot(bot)
+                setIsEditDialogOpen(true)
+              }}
+              onDelete={() => handleDeleteBot(bot)}
+            />
+          )}
+        />
 
-        <div className="flex items-center justify-between px-4 py-3 border-t">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-700">Số hàng/trang</span>
-            <select className="rounded border-gray-300 text-sm">
-              <option>10</option>
-              <option>20</option>
-              <option>50</option>
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              1
-            </Button>
-            <Button variant="outline" size="sm">
-              2
-            </Button>
-            <Button variant="outline" size="sm">
-              3
-            </Button>
-          </div>
-        </div>
+        {/* Add Bot Dialog */}
+        <CrudDialog
+          title="Thêm BOT mới"
+          fields={botFields}
+          trigger={<div />} // Hidden trigger, using state to control
+          onSubmit={handleAddBot}
+          isOpen={isAddDialogOpen}
+          onOpenChange={setIsAddDialogOpen}
+        />
+
+        {/* Edit Bot Dialog */}
+        {selectedBot && (
+          <CrudDialog
+            title={`Chỉnh sửa BOT: ${selectedBot.name}`}
+            fields={botFields}
+            initialData={{
+              name: selectedBot.name,
+              slug: selectedBot.slug,
+              description: selectedBot.description || '',
+              prompt: selectedBot.prompt || '',
+              llmModelId: selectedBot.llmModelId || '',
+              department: selectedBot.department?.id.toString() || '',
+            }}
+            trigger={<div />} // Hidden trigger, using state to control
+            onSubmit={handleEditBot}
+            isOpen={isEditDialogOpen}
+            onOpenChange={setIsEditDialogOpen}
+          />
+        )}
+
+        {/* View Bot Dialog */}
+        {selectedBot && (
+          <CrudDialog
+            title={`Chi tiết BOT: ${selectedBot.name}`}
+            fields={botFields}
+            initialData={{
+              name: selectedBot.name,
+              slug: selectedBot.slug,
+              description: selectedBot.description || '',
+              prompt: selectedBot.prompt || '',
+              llmModelId: selectedBot.llmModelId || '',
+              department: selectedBot.department?.id.toString() || '',
+            }}
+            trigger={<div />} // Hidden trigger, using state to control
+            onSubmit={() => Promise.resolve()} // No-op for view mode
+            isOpen={isViewDialogOpen}
+            onOpenChange={setIsViewDialogOpen}
+            readOnly={true}
+          />
+        )}
       </div>
     </MainLayout>
   )
 }
-

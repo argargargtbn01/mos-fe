@@ -1,59 +1,20 @@
-import { Department, CreateDepartmentDto, UpdateDepartmentDto } from "@/types/department";
-import axiosInstance from "./axios-config";
+import type { Department } from "@/types/department"
+import { BaseApiService } from "./base-api"
 
-export class DepartmentService {
-  private static instance: DepartmentService;
-  private readonly baseUrl = "/departments";
-
-  private constructor() {}
-
-  // Singleton: đảm bảo chỉ có 1 instance của DepartmentService trong toàn bộ ứng dụng
-  public static getInstance(): DepartmentService {
-    if (!DepartmentService.instance) {
-      DepartmentService.instance = new DepartmentService();
-    }
-    return DepartmentService.instance;
+class DepartmentService extends BaseApiService<Department> {
+  constructor() {
+    super("/departments")
   }
 
-  /**
-   * Lấy danh sách department
-   */
-  async getDepartments(): Promise<Department[]> {
-    const response = await axiosInstance.get<Department[]>(this.baseUrl);
-    return response.data;
+  // Department-specific methods
+  async toggleStatus(id: number, active: boolean): Promise<Department> {
+    return this.update(id, { active })
   }
 
-  /**
-   * Lấy thông tin 1 department theo ID
-   */
-  async getDepartmentById(id: number): Promise<Department> {
-    const response = await axiosInstance.get<Department>(`${this.baseUrl}/${id}`);
-    return response.data;
-  }
-
-  /**
-   * Tạo mới department
-   */
-  async createDepartment(data: CreateDepartmentDto): Promise<Department> {
-    const response = await axiosInstance.post<Department>(this.baseUrl, data);
-    return response.data;
-  }
-
-  /**
-   * Cập nhật department
-   */
-  async updateDepartment(id: number, data: UpdateDepartmentDto): Promise<Department> {
-    const response = await axiosInstance.patch<Department>(`${this.baseUrl}/${id}`, data);
-    return response.data;  
-  }
-
-  /**
-   * Xoá department
-   */
-  async deleteDepartment(id: number): Promise<void> {
-    await axiosInstance.delete(`${this.baseUrl}/${id}`);
+  async getDepartmentStats(): Promise<any> {
+    return this.request<any>("GET", "/stats")
   }
 }
 
-// Xuất instance singleton của DepartmentService
-export const departmentService = DepartmentService.getInstance();
+export const departmentService = new DepartmentService()
+
