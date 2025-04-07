@@ -12,8 +12,8 @@ const menuItems = [
   { label: "Quản lý BOT", icon: Bot, href: "/bots" },
   { label: "Quản lý LLM Model", icon: BarChart2, href: "/models" },
   { label: "Cấu hình", type: "header" },
-  { label: "Chat setting", icon: MessageCircle, href: "/settings/chat" },
-  { label: "Document setting", icon: Settings, href: "/settings/document" },
+  { label: "Chat setting", icon: MessageCircle, href: "/chat" },
+  { label: "Document setting", icon: Settings, href: "/documents" },
 ]
 
 export default function Sidebar() {

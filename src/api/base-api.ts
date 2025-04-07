@@ -15,7 +15,7 @@ export class BaseApiService<T> {
   }
 
   // Get item by ID
-  async getById(id: number): Promise<T> {
+  async getById(id: any): Promise<T> {
     const response: AxiosResponse<T> = await axiosInstance.get(
       `${this.endpoint}/${id}`
     )
@@ -32,7 +32,7 @@ export class BaseApiService<T> {
   }
 
   // Update item
-  async update(id: number, data: Partial<T>): Promise<T> {
+  async update(id: any, data: Partial<T>): Promise<T> {
     const response: AxiosResponse<T> = await axiosInstance.put(
       `${this.endpoint}/${id}`,
       data
@@ -41,7 +41,7 @@ export class BaseApiService<T> {
   }
 
   // Delete item
-  async delete(id: number): Promise<void> {
+  async delete(id: any): Promise<void> {
     await axiosInstance.delete(`${this.endpoint}/${id}`)
   }
 
