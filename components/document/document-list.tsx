@@ -1,24 +1,18 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  Trash2,
-  FileText,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Bot,
-} from 'lucide-react'
-import type { Document } from '@/types/document'
+import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Trash2, FileText, AlertCircle, CheckCircle, Clock, Bot } from "lucide-react"
+import type { Document } from "@/types/document"
 
 interface DocumentListProps {
   documents: Document[]
   onDelete?: (document: Document) => void
   onView?: (document: Document) => void
   showBotInfo?: boolean
+  deleteLabel?: string
 }
 
 export function DocumentList({
@@ -26,6 +20,7 @@ export function DocumentList({
   onDelete,
   onView,
   showBotInfo = false,
+  deleteLabel = "Xóa",
 }: DocumentListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
@@ -35,11 +30,11 @@ export function DocumentList({
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Ready':
+      case "Ready":
         return <CheckCircle size={16} className="text-green-500" />
-      case 'Processing':
+      case "Processing":
         return <Clock size={16} className="text-amber-500" />
-      case 'Failed':
+      case "Failed":
         return <AlertCircle size={16} className="text-red-500" />
       default:
         return null
@@ -47,18 +42,18 @@ export function DocumentList({
   }
 
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('vi-VN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(date).toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     })
   }
 
   // Hàm để lấy tên file từ s3Key
   const getFileType = (filename: string) => {
-    const extension = filename.split('.').pop()?.toLowerCase() || ''
+    const extension = filename.split(".").pop()?.toLowerCase() || ""
     return extension
   }
 
@@ -82,28 +77,18 @@ export function DocumentList({
                 <FileText size={24} className="text-blue-500" />
                 <div>
                   <h3 className="font-medium">{doc.filename}</h3>
-                  <p className="text-sm text-gray-500 truncate max-w-md">
-                    {doc.content.substring(0, 100)}...
-                  </p>
+                  <p className="text-sm text-gray-500 truncate max-w-md">{doc.content.substring(0, 100)}...</p>
                   {showBotInfo && (
                     <div className="flex items-center gap-1 mt-1">
                       <Bot size={12} className="text-gray-400" />
-                      <span className="text-xs text-gray-500">
-                        Bot ID: {doc.botId}
-                      </span>
+                      <span className="text-xs text-gray-500">Bot ID: {doc.botId}</span>
                     </div>
                   )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Badge
-                  variant={
-                    doc.status === 'Ready'
-                      ? 'success'
-                      : doc.status === 'Processing'
-                      ? 'outline'
-                      : 'destructive'
-                  }
+                  variant={doc.status === "Ready" ? "success" : doc.status === "Processing" ? "outline" : "destructive"}
                   className="flex items-center gap-1"
                 >
                   {getStatusIcon(doc.status)}
@@ -135,21 +120,13 @@ export function DocumentList({
 
                 <div className="flex gap-2 justify-end">
                   {onView && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onView(doc)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => onView(doc)}>
                       <FileText size={16} className="mr-1" /> Xem
                     </Button>
                   )}
                   {onDelete && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => onDelete(doc)}
-                    >
-                      <Trash2 size={16} className="mr-1" /> Xóa
+                    <Button variant="destructive" size="sm" onClick={() => onDelete(doc)}>
+                      <Trash2 size={16} className="mr-1" /> {deleteLabel}
                     </Button>
                   )}
                 </div>

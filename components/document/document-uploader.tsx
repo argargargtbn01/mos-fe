@@ -2,13 +2,15 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { Upload, File, CheckCircle, AlertCircle } from "lucide-react"
+import { Upload, File, CheckCircle, AlertCircle, Bot } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { documentService } from "@/src/api/document-api"
+import { botService } from "@/src/api/bot-api"
+import type { Bot as BotType } from "@/types/bot"
 
 interface DocumentUploaderProps {
   botId?: number
@@ -20,7 +22,27 @@ export function DocumentUploader({ botId = 1, onUploadComplete }: DocumentUpload
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle")
+  const [selectedBot, setSelectedBot] = useState<BotType | null>(null)
   const { toast } = useToast()
+
+  useEffect(() => {
+    if (botId) {
+      loadBotInfo()
+    }
+  }, [botId])
+
+  const loadBotInfo = async () => {
+    try {
+      if (botId) {
+        const bot = await botService.getById(botId)
+        setSelectedBot(bot)
+      } else {
+        setSelectedBot(null)
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải thông tin bot:", error)
+    }
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -77,6 +99,16 @@ export function DocumentUploader({ botId = 1, onUploadComplete }: DocumentUpload
   return (
     <Card className="w-full">
       <CardContent className="p-6">
+        {selectedBot && (
+          <div className="mb-4 p-3 bg-blue-50 rounded-md flex items-center gap-2">
+            <Bot size={20} className="text-blue-500" />
+            <div>
+              <p className="font-medium">Tải lên cho Bot: {selectedBot.name}</p>
+              <p className="text-xs text-gray-500">Tài liệu sẽ được liên kết với bot này</p>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col items-center gap-4">
           <div
             className={`border-2 border-dashed rounded-lg p-8 w-full flex flex-col items-center justify-center gap-4 ${
@@ -142,4 +174,3 @@ export function DocumentUploader({ botId = 1, onUploadComplete }: DocumentUpload
     </Card>
   )
 }
-
