@@ -8,14 +8,23 @@ import { ActionButtons } from '@/components/shared/action-buttons'
 import { CrudDialog } from '@/components/shared/crud-dialog'
 import { botService } from '@/src/api/bot-api'
 import { departmentService } from '@/src/api/department-api'
-import type { Bot } from '@/types/bot'
+import { modelService } from '@/src/api/model-api'
+import type { Bot, ModelInfo } from '@/types/bot'
 import type { Department } from '@/types/department'
 import type { Field } from '@/types/form'
 import { useToast } from '@/hooks/use-toast'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { BotDetailsView } from '@/components/shared/bot-details-view'
 
 export default function BotsPage() {
   const [bots, setBots] = useState<Bot[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
+  const [models, setModels] = useState<ModelInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedBot, setSelectedBot] = useState<Bot | null>(null)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
@@ -30,12 +39,22 @@ export default function BotsPage() {
   const loadData = async () => {
     try {
       setLoading(true)
-      const [botsData, departmentsData] = await Promise.all([
-        botService.getAll(),
-        departmentService.getAll(),
-      ])
+      const [botsWithModelInfoData, departmentsData, modelsData] =
+        await Promise.all([
+          botService.getAllWithModelInfo(),
+          departmentService.getAll(),
+          modelService.getModels(),
+        ])
+
+      // Chuyển đổi dữ liệu từ API sang định dạng Bot[]
+      const botsData = botsWithModelInfoData.map((item) => ({
+        ...item.bot,
+        modelInfo: item.modelInfo,
+      }))
+
       setBots(botsData)
       setDepartments(departmentsData)
+      setModels(modelsData)
     } catch (error) {
       console.error('Lỗi khi tải dữ liệu:', error)
       toast({
@@ -61,7 +80,7 @@ export default function BotsPage() {
         slug: data.slug,
         description: data.description,
         prompt: data.prompt,
-        llmModelId: data.llmModelId,
+        modelName: data.modelName, // Changed from llmModelId to modelName
         department: { id: departmentId, name: departmentName },
       })
 
@@ -97,8 +116,8 @@ export default function BotsPage() {
         slug: data.slug,
         description: data.description,
         prompt: data.prompt,
-        llmModelId: data.llmModelId,
-        department: { id: departmentId, name:departmentName },
+        modelName: data.modelName, // Changed from llmModelId to modelName
+        department: { id: departmentId, name: departmentName },
       })
 
       toast({
@@ -139,6 +158,24 @@ export default function BotsPage() {
     }
   }
 
+  const handleViewBot = async (bot: Bot) => {
+    try {
+      if (bot.modelName && !bot.modelInfo) {
+        // Nếu bot có model nhưng chưa có thông tin chi tiết, tải thông tin model
+        const botWithInfo = await botService.getWithModelInfo(bot.id)
+        setSelectedBot({
+          ...bot,
+          modelInfo: botWithInfo.modelInfo,
+        })
+      } else {
+        setSelectedBot(bot)
+      }
+      setIsViewDialogOpen(true)
+    } catch (error) {
+      console.error('Lỗi khi tải thông tin chi tiết bot:', error)
+    }
+  }
+
   const botFields: Field[] = [
     {
       name: 'name',
@@ -163,9 +200,14 @@ export default function BotsPage() {
       type: 'textarea',
     },
     {
-      name: 'llmModelId',
-      label: 'LLM Model',
-      type: 'text',
+      name: 'modelName',
+      label: 'Model',
+      type: 'select',
+      options: models.map((model) => ({
+        value: model.model_name,
+        label: model.model_name,
+      })),
+      required: true,
     },
     {
       name: 'department',
@@ -194,6 +236,11 @@ export default function BotsPage() {
       key: 'department',
       header: 'Phòng ban',
       cell: (bot: Bot) => bot.department?.name || 'không có thông tin',
+    },
+    {
+      key: 'model',
+      header: 'Model',
+      cell: (bot: Bot) => bot.modelName || 'không có thông tin',
     },
     {
       key: 'created_at',
@@ -225,10 +272,7 @@ export default function BotsPage() {
           onRowSelect={(selectedItems) => console.log(selectedItems)}
           actions={(bot) => (
             <ActionButtons
-              onView={() => {
-                setSelectedBot(bot)
-                setIsViewDialogOpen(true)
-              }}
+              onView={() => handleViewBot(bot)}
               onEdit={() => {
                 setSelectedBot(bot)
                 setIsEditDialogOpen(true)
@@ -258,7 +302,7 @@ export default function BotsPage() {
               slug: selectedBot.slug,
               description: selectedBot.description || '',
               prompt: selectedBot.prompt || '',
-              llmModelId: selectedBot.llmModelId || '',
+              modelName: selectedBot.modelName || '',
               department: selectedBot.department?.id.toString() || '',
             }}
             trigger={<div />} // Hidden trigger, using state to control
@@ -268,25 +312,16 @@ export default function BotsPage() {
           />
         )}
 
-        {/* View Bot Dialog */}
+        {/* View Bot Dialog with detailed info */}
         {selectedBot && (
-          <CrudDialog
-            title={`Chi tiết BOT: ${selectedBot.name}`}
-            fields={botFields}
-            initialData={{
-              name: selectedBot.name,
-              slug: selectedBot.slug,
-              description: selectedBot.description || '',
-              prompt: selectedBot.prompt || '',
-              llmModelId: selectedBot.llmModelId || '',
-              department: selectedBot.department?.id.toString() || '',
-            }}
-            trigger={<div />} // Hidden trigger, using state to control
-            onSubmit={() => Promise.resolve()} // No-op for view mode
-            isOpen={isViewDialogOpen}
-            onOpenChange={setIsViewDialogOpen}
-            readOnly={true}
-          />
+          <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Chi tiết BOT: {selectedBot.name}</DialogTitle>
+              </DialogHeader>
+              <BotDetailsView bot={selectedBot} />
+            </DialogContent>
+          </Dialog>
         )}
       </div>
     </MainLayout>

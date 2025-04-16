@@ -1,23 +1,25 @@
-import type { LlmModel } from "@/types/model"
+import type { ModelInfo } from "@/types/bot"
 import { BaseApiService } from "./base-api"
 
-class ModelService extends BaseApiService<LlmModel> {
+interface ModelResponse {
+  data: ModelInfo[]
+}
+
+class ModelService extends BaseApiService<any> {
   constructor() {
     super("/models")
   }
 
-  // Model-specific methods
-  async getActiveModels(): Promise<LlmModel[]> {
-    const response = await this.request<LlmModel[]>("GET", "/active")
-    return response
+  // Get all models from the API endpoint
+  async getModels(): Promise<ModelInfo[]> {
+    const response = await this.request<ModelResponse>("GET", "/info")
+    return response.data
   }
 
-  async toggleStatus(id: number, status: string): Promise<LlmModel> {
-    return this.update(id, { status })
-  }
-
-  async updateConfigurations(id: number, configurations: any): Promise<LlmModel> {
-    return this.update(id, { configurations })
+  // Get model by name
+  async getModelByName(name: string): Promise<ModelInfo | undefined> {
+    const models = await this.getModels()
+    return models.find(model => model.model_name === name)
   }
 }
 

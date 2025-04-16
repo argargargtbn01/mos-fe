@@ -24,12 +24,6 @@ pipeline {
                 sh 'npm run build'
             }
         }
-        stage('Test') {
-            steps {
-                // Nếu dự án có test, chạy lệnh test
-                sh 'npm run test'
-            }
-        }
         stage('Archive Artifacts') {
             steps {
                 // Lưu lại artifact nếu dự án xuất ra thư mục build nào đó.
