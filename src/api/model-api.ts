@@ -12,7 +12,7 @@ class ModelService extends BaseApiService<any> {
 
   // Get all models from the API endpoint
   async getModels(): Promise<ModelInfo[]> {
-    const response = await this.request<ModelResponse>("GET", "/info")
+    const response = await this.request<ModelResponse>("GET", "")
     return response.data
   }
 

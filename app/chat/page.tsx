@@ -10,34 +10,65 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Send, Bot, User, RefreshCw, Download } from "lucide-react"
+import { botService } from '@/src/api/bot-api'
+import axiosInstance from '@/src/api/axios-config'
+import { useToast } from '@/hooks/use-toast'
 
 interface Message {
   id: string
-  role: "user" | "bot"
+  role: 'user' | 'bot'
   content: string
   timestamp: Date
+  sources?: {
+    documentId: string
+    source: string
+    similarity: number
+    textPreview: string
+  }[]
+}
+
+interface BotOption {
+  id: number
+  name: string
 }
 
 export default function ChatPage() {
-  const [selectedBot, setSelectedBot] = useState<string>("")
+  const [selectedBot, setSelectedBot] = useState<string>('')
+  const [bots, setBots] = useState<BotOption[]>([])
   const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState<string>("")
+  const [input, setInput] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [temperature, setTemperature] = useState<number>(0.7)
+  const [maxTokens, setMaxTokens] = useState<number>(2048)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const { toast } = useToast()
 
-  const bots = [
-    { id: "1", name: "BIC hỏi đáp" },
-    { id: "2", name: "Test_BOT_CC247_Condensed prompt" },
-    { id: "3", name: "Test bot for ezCode" },
-    { id: "4", name: "ezCollection - Output response" },
-  ]
+  // Lấy danh sách bot khi trang được tải
+  useEffect(() => {
+    const fetchBots = async () => {
+      try {
+        const response = await botService.getAll()
+        setBots(response)
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách bot:', error)
+        toast({
+          title: 'Lỗi',
+          description: 'Không thể lấy danh sách bot. Vui lòng thử lại sau.',
+          variant: 'destructive',
+        })
+      }
+    }
+
+    fetchBots()
+    // Loại bỏ dependency toast, chỉ chạy 1 lần khi component mount
+  }, [])
 
   useEffect(() => {
     scrollToBottom()
   }, [messages])
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
   const handleSendMessage = async () => {
@@ -46,30 +77,57 @@ export default function ChatPage() {
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
-      role: "user",
+      role: 'user',
       content: input,
       timestamp: new Date(),
     }
 
     setMessages((prev) => [...prev, userMessage])
-    setInput("")
+    setInput('')
     setIsLoading(true)
 
-    // Simulate bot response after delay
-    setTimeout(() => {
+    try {
+      // Gọi API chat với parameter sử dụng RAG
+      const response = await axiosInstance.post('/chat', {
+        botId: parseInt(selectedBot),
+        query: userMessage.content,
+        useRAG: true,
+        temperature: temperature,
+        maxTokens: maxTokens,
+      })
+
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        role: "bot",
-        content: `Đây là phản hồi từ bot "${bots.find((b) => b.id === selectedBot)?.name}" cho tin nhắn: "${input}"`,
+        role: 'bot',
+        content: response.data.answer,
+        timestamp: new Date(),
+        sources: response.data.sources,
+      }
+
+      setMessages((prev) => [...prev, botMessage])
+    } catch (error) {
+      console.error('Lỗi khi gửi tin nhắn:', error)
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể xử lý yêu cầu của bạn. Vui lòng thử lại sau.',
+        variant: 'destructive',
+      })
+
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'bot',
+        content:
+          'Xin lỗi, đã xảy ra lỗi khi xử lý yêu cầu của bạn. Vui lòng thử lại sau.',
         timestamp: new Date(),
       }
-      setMessages((prev) => [...prev, botMessage])
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSendMessage()
     }
@@ -81,12 +139,12 @@ export default function ChatPage() {
 
   const downloadConversation = () => {
     const conversationText = messages
-      .map((msg) => `${msg.role === "user" ? "User" : "Bot"}: ${msg.content}`)
-      .join("\n\n")
+      .map((msg) => `${msg.role === 'user' ? 'User' : 'Bot'}: ${msg.content}`)
+      .join('\n\n')
 
-    const blob = new Blob([conversationText], { type: "text/plain" })
+    const blob = new Blob([conversationText], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
+    const a = document.createElement('a')
     a.href = url
     a.download = `conversation-${new Date().toISOString().slice(0, 10)}.txt`
     document.body.appendChild(a)
@@ -99,23 +157,32 @@ export default function ChatPage() {
     <MainLayout>
       <div className="flex flex-col h-screen">
         <div className="p-4 border-b">
-          <h1 className="text-2xl font-semibold text-gray-900">Test Bot</h1>
-          <p className="text-gray-500">Kiểm tra và tương tác với các bot</p>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Trò chuyện với Bot
+          </h1>
+          <p className="text-gray-500">
+            Tương tác với bot thông minh với khả năng truy vấn tài liệu (RAG)
+          </p>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar with bot selection and settings */}
           <div className="w-80 border-r bg-gray-50 p-4 flex flex-col">
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Chọn Bot</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Chọn Bot
+              </label>
               <Select value={selectedBot} onValueChange={setSelectedBot}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn bot để test" />
+                  <SelectValue placeholder="Chọn bot để trò chuyện" />
                 </SelectTrigger>
                 <SelectContent>
                   {bots.map((bot) => (
-                    <SelectItem key={bot.id} value={bot.id}>
-                      {bot.name}
+                    <SelectItem key={bot.id} value={bot.id.toString()}>
+                      <div className="flex items-center">
+                        <Bot className="w-4 h-4 mr-2 text-emerald-500" />
+                        {bot.name}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -123,21 +190,42 @@ export default function ChatPage() {
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cài đặt</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cài đặt
+              </label>
               <Card>
                 <CardContent className="p-4">
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm text-gray-700 mb-1">Temperature</label>
+                      <label className="block text-sm text-gray-700 mb-1">
+                        Temperature
+                      </label>
                       <div className="flex items-center">
-                        <input type="range" min="0" max="1" step="0.1" defaultValue="0.7" className="w-full" />
-                        <span className="ml-2 text-sm">0.7</span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.1"
+                          value={temperature}
+                          onChange={(e) =>
+                            setTemperature(parseFloat(e.target.value))
+                          }
+                          className="w-full"
+                        />
+                        <span className="ml-2 text-sm">{temperature}</span>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm text-gray-700 mb-1">Max tokens</label>
-                      <Input type="number" defaultValue={2048} className="w-full" />
+                      <label className="block text-sm text-gray-700 mb-1">
+                        Max tokens
+                      </label>
+                      <Input
+                        type="number"
+                        value={maxTokens}
+                        onChange={(e) => setMaxTokens(parseInt(e.target.value))}
+                        className="w-full"
+                      />
                     </div>
                   </div>
                 </CardContent>
@@ -145,7 +233,11 @@ export default function ChatPage() {
             </div>
 
             <div className="mt-auto space-y-2">
-              <Button variant="outline" className="w-full flex items-center justify-center" onClick={clearConversation}>
+              <Button
+                variant="outline"
+                className="w-full flex items-center justify-center"
+                onClick={clearConversation}
+              >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Làm mới cuộc trò chuyện
               </Button>
@@ -174,19 +266,64 @@ export default function ChatPage() {
                 </div>
               ) : (
                 messages.map((message) => (
-                  <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    key={message.id}
+                    className={`flex ${
+                      message.role === 'user' ? 'justify-end' : 'justify-start'
+                    }`}
+                  >
                     <div
                       className={`max-w-3xl rounded-lg px-4 py-2 ${
-                        message.role === "user" ? "bg-emerald-600 text-white" : "bg-gray-100 text-gray-800"
+                        message.role === 'user'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-gray-100 text-gray-800'
                       }`}
                     >
                       <div className="flex items-center mb-1">
-                        {message.role === "bot" ? <Bot className="w-4 h-4 mr-2" /> : <User className="w-4 h-4 mr-2" />}
+                        {message.role === 'bot' ? (
+                          <Bot className="w-4 h-4 mr-2" />
+                        ) : (
+                          <User className="w-4 h-4 mr-2" />
+                        )}
                         <span className="text-xs opacity-75">
-                          {message.role === "user" ? "Bạn" : bots.find((b) => b.id === selectedBot)?.name}
+                          {message.role === 'user'
+                            ? 'Bạn'
+                            : bots.find((b) => b.id.toString() === selectedBot)
+                                ?.name || 'Bot'}
                         </span>
                       </div>
-                      <div className="whitespace-pre-wrap">{message.content}</div>
+                      <div className="whitespace-pre-wrap">
+                        {message.content}
+                      </div>
+
+                      {/* Hiển thị sources nếu có */}
+                      {message.sources && message.sources.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <p className="text-xs font-medium mb-2">
+                            Nguồn tài liệu:
+                          </p>
+                          <div className="space-y-2">
+                            {message.sources.map((source, idx) => (
+                              <div
+                                key={idx}
+                                className="bg-white/50 p-2 rounded-md text-xs"
+                              >
+                                <div className="flex justify-between">
+                                  <span className="font-medium">
+                                    {source.source}
+                                  </span>
+                                  <span className="text-xs bg-amber-100 text-amber-800 px-1 rounded">
+                                    {Math.round(source.similarity * 100)}%
+                                  </span>
+                                </div>
+                                <p className="text-gray-600 text-xs mt-1 italic">
+                                  {source.textPreview}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))
@@ -197,15 +334,15 @@ export default function ChatPage() {
                     <div className="flex items-center space-x-2">
                       <div
                         className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"
-                        style={{ animationDelay: "0ms" }}
+                        style={{ animationDelay: '0ms' }}
                       ></div>
                       <div
                         className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"
-                        style={{ animationDelay: "150ms" }}
+                        style={{ animationDelay: '150ms' }}
                       ></div>
                       <div
                         className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"
-                        style={{ animationDelay: "300ms" }}
+                        style={{ animationDelay: '300ms' }}
                       ></div>
                     </div>
                   </div>
@@ -234,7 +371,9 @@ export default function ChatPage() {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">Nhấn Enter để gửi, Shift+Enter để xuống dòng</p>
+              <p className="text-xs text-gray-500 mt-2">
+                Nhấn Enter để gửi, Shift+Enter để xuống dòng
+              </p>
             </div>
           </div>
         </div>
