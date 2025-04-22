@@ -141,7 +141,7 @@ export function DocumentUploader({ botId = 1, onUploadComplete }: DocumentUpload
               type="file"
               className="hidden"
               id="document-upload"
-              accept=".pdf,.docx,.txt"
+              accept=".docx,.txt"
               onChange={handleFileChange}
               disabled={uploading}
             />
