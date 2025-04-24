@@ -11,23 +11,21 @@ export const metadata: Metadata = {
 
 export default function DocumentsPage({
   params,
-}: {
-  params: { botId: string };
-}) {
-  const botId = parseInt(params.botId);
+}: any) {
+  const botId = parseInt(params.botId)
 
   return (
     <div className="flex flex-col space-y-4 p-4 md:p-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Tài liệu</h1>
         <div className="flex items-center space-x-2">
-          <Button asChild variant="outline">
+          <Button variant="outline">
             <Link href={`/bots/${botId}/documents/query`}>
               <Search className="w-4 h-4 mr-2" />
               Hỏi đáp tài liệu
             </Link>
           </Button>
-          <Button asChild>
+          <Button>
             <Link href={`/bots/${botId}/documents/upload`}>
               <PlusCircle className="w-4 h-4 mr-2" />
               Tải lên tài liệu
@@ -37,5 +35,5 @@ export default function DocumentsPage({
       </div>
       <DocumentList botId={botId} />
     </div>
-  );
+  )
 }

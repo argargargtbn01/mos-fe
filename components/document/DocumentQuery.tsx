@@ -1,60 +1,91 @@
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Send } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import api from '@/lib/api';
+'use client'
+
+import React, { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Loader2, Send } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import axios from 'axios'
+
+// Tạo instance API trực tiếp thay vì import từ file riêng
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://quang1709.ddns.net:3000',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// Tạo một toast component đơn giản
+const useToast = () => {
+  const showToast = (message: {
+    title: string
+    description: string
+    variant?: string
+  }) => {
+    console.error(`${message.title}: ${message.description}`)
+    // Hiển thị toast bằng alert trong trường hợp không có toast component
+    alert(`${message.title}: ${message.description}`)
+  }
+
+  return { toast: showToast }
+}
 
 interface DocumentQueryProps {
-  botId: number;
+  botId: number
 }
 
 interface Source {
-  documentId: string;
-  source: string;
-  similarity: number;
-  textPreview: string;
+  documentId: string
+  source: string
+  similarity: number
+  textPreview: string
 }
 
 interface RagResponse {
-  answer: string;
-  query: string;
-  sources: Source[];
-  timestamp: string;
+  answer: string
+  query: string
+  sources: Source[]
+  timestamp: string
 }
 
 export function DocumentQuery({ botId }: DocumentQueryProps) {
-  const [query, setQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [response, setResponse] = useState<RagResponse | null>(null);
-  const { toast } = useToast();
+  const [query, setQuery] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [response, setResponse] = useState<RagResponse | null>(null)
+  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!query.trim()) return;
-    
-    setIsLoading(true);
+    e.preventDefault()
+
+    if (!query.trim()) return
+
+    setIsLoading(true)
     try {
       const result = await api.post('/documents/query', {
         botId,
-        query: query.trim()
-      });
-      
-      setResponse(result.data);
+        query: query.trim(),
+      })
+
+      setResponse(result.data)
     } catch (error) {
-      console.error('Lỗi khi gửi câu hỏi:', error);
+      console.error('Lỗi khi gửi câu hỏi:', error)
       toast({
-        title: "Lỗi",
-        description: "Không thể xử lý câu hỏi của bạn. Vui lòng thử lại sau.",
-        variant: "destructive"
-      });
+        title: 'Lỗi',
+        description: 'Không thể xử lý câu hỏi của bạn. Vui lòng thử lại sau.',
+        variant: 'destructive',
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="flex flex-col space-y-4 w-full">
@@ -75,7 +106,11 @@ export function DocumentQuery({ botId }: DocumentQueryProps) {
               className="flex-1"
             />
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
               <span className="ml-2">Gửi</span>
             </Button>
           </form>
@@ -100,11 +135,14 @@ export function DocumentQuery({ botId }: DocumentQueryProps) {
                 <h4 className="text-sm font-medium mb-2">Nguồn tài liệu:</h4>
                 <div className="space-y-2">
                   {response.sources.map((source, index) => (
-                    <div key={index} className="bg-muted/50 p-3 rounded-md text-sm">
+                    <div
+                      key={index}
+                      className="bg-muted/50 p-3 rounded-md text-sm"
+                    >
                       <div className="flex justify-between items-start mb-1">
                         <div className="font-medium">{source.source}</div>
                         <Badge variant="outline">
-                          {Math.round(source.similarity * 100)}% 
+                          {Math.round(source.similarity * 100)}%
                         </Badge>
                       </div>
                       <div className="text-muted-foreground text-xs italic">
@@ -117,10 +155,11 @@ export function DocumentQuery({ botId }: DocumentQueryProps) {
             )}
           </CardContent>
           <CardFooter className="text-xs text-muted-foreground">
-            Câu hỏi: "{response.query}" • {new Date(response.timestamp).toLocaleString()}
+            Câu hỏi: "{response.query}" •{' '}
+            {new Date(response.timestamp).toLocaleString()}
           </CardFooter>
         </Card>
       )}
     </div>
-  );
+  )
 }

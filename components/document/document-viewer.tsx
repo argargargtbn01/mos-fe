@@ -1,11 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
-import { documentService } from "@/src/api/document-api"
-import type { Document, DocumentChunk } from "@/types/document"
+import { useState, useEffect, useCallback } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent } from '@/components/ui/card'
+import { documentService } from '@/src/api/document-api'
+import type { Document, DocumentChunk } from '@/types/document'
 
 interface DocumentViewerProps {
   document: Document | null
@@ -13,17 +18,15 @@ interface DocumentViewerProps {
   onOpenChange: (open: boolean) => void
 }
 
-export function DocumentViewer({ document, isOpen, onOpenChange }: DocumentViewerProps) {
+export function DocumentViewer({
+  document,
+  isOpen,
+  onOpenChange,
+}: DocumentViewerProps) {
   const [chunks, setChunks] = useState<DocumentChunk[]>([])
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (isOpen && document) {
-      loadChunks()
-    }
-  }, [isOpen, document])
-
-  const loadChunks = async () => {
+  const loadChunks = useCallback(async () => {
     if (!document) return
 
     try {
@@ -31,11 +34,17 @@ export function DocumentViewer({ document, isOpen, onOpenChange }: DocumentViewe
       const data = await documentService.getDocumentChunks(document.id)
       setChunks(data)
     } catch (error) {
-      console.error("Lỗi khi tải đoạn tài liệu:", error)
+      console.error('Lỗi khi tải đoạn tài liệu:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [document])
+
+  useEffect(() => {
+    if (isOpen && document) {
+      loadChunks()
+    }
+  }, [isOpen, document, loadChunks])
 
   if (!document) return null
 
@@ -46,7 +55,10 @@ export function DocumentViewer({ document, isOpen, onOpenChange }: DocumentViewe
           <DialogTitle>Xem tài liệu: {document.filename}</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="content" className="flex-1 overflow-hidden flex flex-col">
+        <Tabs
+          defaultValue="content"
+          className="flex-1 overflow-hidden flex flex-col"
+        >
           <TabsList>
             <TabsTrigger value="content">Nội dung</TabsTrigger>
             <TabsTrigger value="chunks">Đoạn văn bản</TabsTrigger>
@@ -56,7 +68,9 @@ export function DocumentViewer({ document, isOpen, onOpenChange }: DocumentViewe
           <TabsContent value="content" className="flex-1 overflow-auto p-4">
             <Card>
               <CardContent className="p-4">
-                <p className="whitespace-pre-wrap text-sm">{document.content}</p>
+                <p className="whitespace-pre-wrap text-sm">
+                  {document.content}
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
@@ -76,9 +90,13 @@ export function DocumentViewer({ document, isOpen, onOpenChange }: DocumentViewe
                   <Card key={chunk.id}>
                     <CardContent className="p-4">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs text-gray-500">ID: {chunk.id.substring(0, 8)}...</span>
+                        <span className="text-xs text-gray-500">
+                          ID: {chunk.id.substring(0, 8)}...
+                        </span>
                       </div>
-                      <p className="whitespace-pre-wrap text-sm">{chunk.content}</p>
+                      <p className="whitespace-pre-wrap text-sm">
+                        {chunk.content}
+                      </p>
                     </CardContent>
                   </Card>
                 ))}
@@ -111,24 +129,24 @@ export function DocumentViewer({ document, isOpen, onOpenChange }: DocumentViewe
               <div>
                 <p className="text-sm text-gray-500">Ngày tạo</p>
                 <p className="font-medium">
-                  {new Date(document.createdAt).toLocaleDateString("vi-VN", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
+                  {new Date(document.createdAt).toLocaleDateString('vi-VN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
                   })}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Ngày cập nhật</p>
                 <p className="font-medium">
-                  {new Date(document.updatedAt).toLocaleDateString("vi-VN", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
+                  {new Date(document.updatedAt).toLocaleDateString('vi-VN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
                   })}
                 </p>
               </div>

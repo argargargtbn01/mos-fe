@@ -17,19 +17,22 @@ function Loading() {
   );
 }
 
-export default function DocumentQueryPage({
-  params,
-}: {
-  params: { botId: string };
-}) {
-  const botId = parseInt(params.botId);
+interface DocumentQueryPageProps {
+  params: {
+    botId: string
+  }
+}
+
+export default function DocumentQueryPage({ params }: any) {
+  const botId = parseInt(params.botId)
 
   return (
     <div className="flex flex-col space-y-4 p-4 md:p-8 max-w-4xl mx-auto">
       <div className="flex flex-col space-y-2">
         <h1 className="text-2xl font-bold">Hỏi đáp tài liệu</h1>
         <p className="text-muted-foreground">
-          Đặt câu hỏi về nội dung trong tài liệu đã upload và nhận câu trả lời thông minh
+          Đặt câu hỏi về nội dung trong tài liệu đã upload và nhận câu trả lời
+          thông minh
         </p>
       </div>
 
@@ -39,5 +42,5 @@ export default function DocumentQueryPage({
         </Suspense>
       </div>
     </div>
-  );
+  )
 }

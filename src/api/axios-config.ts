@@ -1,7 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 // const baseURL ='http://localhost:3003';
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003'
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://quang1709.ddns.net:3003'
 
 const axiosInstance = axios.create({
   baseURL,

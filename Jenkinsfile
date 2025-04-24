@@ -2,44 +2,72 @@ pipeline {
     agent any
 
     environment {
-        NODE_ENV = "production"  // Bạn có thể thay đổi thành "development" nếu cần
+        DOCKER_IMAGE = "quang1709/mos-fe:latest"
+        DOCKER_CREDENTIALS_ID = 'quang1709-dockerhub'
+        KUBE_CONFIG_ID = 'kubeconfig-credentials'
+        DEPLOYMENT_NAME = 'mos-fe-kltn-service'
+        DEPLOYMENT_NAMESPACE = 'argocd'
+        
+        // Biến môi trường từ Jenkins credentials
+        NEXT_PUBLIC_API_URL = credentials('NEXT_PUBLIC_API_URL')
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                // Lấy mã nguồn từ Git repository; thay đổi branch nếu cần (ví dụ: main hoặc master)
-                git url: 'https://github.com/argargargtbn01/mos-fe.git', branch: 'master'
+                checkout scm
             }
         }
+
         stage('Install Dependencies') {
             steps {
-                // Cài đặt các package từ package.json
                 sh 'npm install'
             }
         }
-        stage('Build') {
+
+        stage('Build Application') {
             steps {
-                // Build dự án Next.js; lệnh này sẽ chạy "next build"
                 sh 'npm run build'
             }
         }
-        stage('Archive Artifacts') {
+
+        stage('Build Docker Image') {
             steps {
-                // Lưu lại artifact nếu dự án xuất ra thư mục build nào đó.
-                // Nếu sử dụng "next export", kết quả thường nằm ở thư mục "out".
-                // Nếu không, bạn có thể lưu thư mục .next hoặc các file cần deploy.
-                archiveArtifacts artifacts: 'out/**', fingerprint: true
+                // Tạo file .env từ biến môi trường Jenkins
+                sh '''
+                cat > .env << EOL
+# API Configuration
+NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+EOL
+                '''
+                
+                // Xây dựng Docker image và copy file .env vào
+                sh "docker build -t ${DOCKER_IMAGE} ."
             }
         }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                    sh "docker push ${DOCKER_IMAGE}"
+                }
+            }
+        }
+
     }
-    
+
     post {
         success {
-            echo 'Pipeline hoàn thành thành công!'
+            echo 'CI/CD pipeline completed successfully!'
         }
         failure {
-            echo 'Pipeline thất bại, vui lòng kiểm tra log chi tiết!'
+            echo 'CI/CD pipeline failed. Please check the logs for details.'
+        }
+        always {
+            // Clean up to save disk space
+            sh 'docker system prune -f || true'
+            sh 'if [ -f ".env" ]; then rm -f .env; fi'
         }
     }
 }
