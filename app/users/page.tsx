@@ -44,7 +44,14 @@ export default function UsersPage() {
 
   const handleAddUser = async (data: Record<string, any>) => {
     try {
-      await userService.create(data)
+      // Chuyển đổi role và department từ string sang dạng số
+      const formattedData = {
+        ...data,
+        role: data.role ? parseInt(data.role, 10): 1,
+        department: data.department ? parseInt(data.department, 10): 1,
+      }
+
+      await userService.create(formattedData)
       toast({
         title: 'Thành công',
         description: 'Thêm người dùng thành công',
@@ -66,7 +73,14 @@ export default function UsersPage() {
     if (!selectedUser) return Promise.reject('No user selected')
 
     try {
-      await userService.update(selectedUser.id, data)
+      // Chuyển đổi role và department từ string sang dạng số
+      const formattedData = {
+        ...data,
+        role: data.role ? parseInt(data.role, 10) : null,
+        department: data.department ? parseInt(data.department, 10) : null,
+      }
+
+      await userService.update(selectedUser.id, formattedData)
       toast({
         title: 'Thành công',
         description: 'Cập nhật người dùng thành công',

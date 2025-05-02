@@ -31,10 +31,13 @@ export function DataTable<T extends { id: string | number }>({
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage)
 
-  const totalPages = Math.ceil(data.length / rowsPerPage)
+  // Ensure data is an array to prevent the "data.slice is not a function" error
+  const safeData = Array.isArray(data) ? data : []
+
+  const totalPages = Math.ceil(safeData.length / rowsPerPage)
   const startIndex = (currentPage - 1) * rowsPerPage
   const endIndex = startIndex + rowsPerPage
-  const currentData = data.slice(startIndex, endIndex)
+  const currentData = safeData.slice(startIndex, endIndex)
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -54,7 +57,9 @@ export function DataTable<T extends { id: string | number }>({
     if (checked) {
       newSelectedItems = [...selectedItems, item]
     } else {
-      newSelectedItems = selectedItems.filter((selectedItem) => selectedItem.id !== item.id)
+      newSelectedItems = selectedItems.filter(
+        (selectedItem) => selectedItem.id !== item.id
+      )
     }
 
     setSelectedItems(newSelectedItems)
@@ -64,7 +69,8 @@ export function DataTable<T extends { id: string | number }>({
     }
   }
 
-  const isItemSelected = (item: T) => selectedItems.some((selectedItem) => selectedItem.id === item.id)
+  const isItemSelected = (item: T) =>
+    selectedItems.some((selectedItem) => selectedItem.id === item.id)
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -85,7 +91,10 @@ export function DataTable<T extends { id: string | number }>({
               {onRowSelect && (
                 <TableHead className="w-12">
                   <Checkbox
-                    checked={currentData.length > 0 && selectedItems.length === currentData.length}
+                    checked={
+                      currentData.length > 0 &&
+                      selectedItems.length === currentData.length
+                    }
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
@@ -104,7 +113,9 @@ export function DataTable<T extends { id: string | number }>({
             {currentData.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length + (onRowSelect ? 1 : 0) + (actions ? 1 : 0)}
+                  colSpan={
+                    columns.length + (onRowSelect ? 1 : 0) + (actions ? 1 : 0)
+                  }
                   className="text-center py-8 text-gray-500"
                 >
                   Không có dữ liệu
@@ -117,13 +128,17 @@ export function DataTable<T extends { id: string | number }>({
                     <TableCell>
                       <Checkbox
                         checked={isItemSelected(item)}
-                        onCheckedChange={(checked) => handleSelectItem(item, checked as boolean)}
+                        onCheckedChange={(checked) =>
+                          handleSelectItem(item, checked as boolean)
+                        }
                       />
                     </TableCell>
                   )}
 
                   {columns.map((column) => (
-                    <TableCell key={`${item.id}-${column.key}`}>{column.cell(item)}</TableCell>
+                    <TableCell key={`${item.id}-${column.key}`}>
+                      {column.cell(item)}
+                    </TableCell>
                   ))}
 
                   {actions && <TableCell>{actions(item)}</TableCell>}
