@@ -246,8 +246,6 @@ export default function ModelsPage() {
       <div className="p-6">
         <EntityHeader
           title="Danh sách LLM Model"
-          addButtonLabel="Thêm Model"
-          onAdd={() => setIsAddDialogOpen(true)}
         />
 
         <DataTable
