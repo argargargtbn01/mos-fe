@@ -32,6 +32,9 @@ interface BotOption {
   name: string
 }
 
+// Khóa localStorage để lưu chatId theo từng bot
+const CHAT_ID_KEY_PREFIX = 'chat_id_for_bot_'
+
 export default function ChatPage() {
   const [selectedBot, setSelectedBot] = useState<string>('')
   const [bots, setBots] = useState<BotOption[]>([])
@@ -40,6 +43,7 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [temperature, setTemperature] = useState<number>(0.7)
   const [maxTokens, setMaxTokens] = useState<number>(2048)
+  const [chatId, setChatId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
@@ -63,9 +67,28 @@ export default function ChatPage() {
     // Loại bỏ dependency toast, chỉ chạy 1 lần khi component mount
   }, [])
 
+  // Effect để scroll xuống dưới khi có tin nhắn mới
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Effect để load chatId từ localStorage khi chọn bot
+  useEffect(() => {
+    if (selectedBot) {
+      const storedChatId = localStorage.getItem(`${CHAT_ID_KEY_PREFIX}${selectedBot}`)
+      setChatId(storedChatId)
+      
+      // Nếu có chatId được lưu, hiển thị thông báo
+      if (storedChatId && messages.length === 0) {
+        setMessages([{
+          id: 'system-message',
+          role: 'bot',
+          content: 'Tiếp tục cuộc trò chuyện trước đó với bot này. Lịch sử trò chuyện đã được lưu lại.',
+          timestamp: new Date()
+        }])
+      }
+    }
+  }, [selectedBot])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -87,14 +110,22 @@ export default function ChatPage() {
     setIsLoading(true)
 
     try {
-      // Gọi API chat với parameter sử dụng RAG
+      // Gọi API chat với chatId (nếu có) để duy trì lịch sử trò chuyện
       const response = await axiosInstance.post('/chat', {
         botId: parseInt(selectedBot),
         query: userMessage.content,
         useRAG: true,
         temperature: temperature,
         maxTokens: maxTokens,
+        chatId: chatId // Thêm chatId vào request nếu có
       })
+
+      // Lưu chatId nhận được từ server
+      if (response.data.chatId) {
+        setChatId(response.data.chatId)
+        // Lưu chatId vào localStorage để dùng cho lần tiếp theo
+        localStorage.setItem(`${CHAT_ID_KEY_PREFIX}${selectedBot}`, response.data.chatId)
+      }
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -135,6 +166,30 @@ export default function ChatPage() {
 
   const clearConversation = () => {
     setMessages([])
+    
+    // Xóa chatId khỏi state và localStorage
+    if (selectedBot) {
+      localStorage.removeItem(`${CHAT_ID_KEY_PREFIX}${selectedBot}`)
+      setChatId(null)
+    }
+
+    toast({
+      title: 'Đã làm mới cuộc trò chuyện',
+      description: 'Lịch sử trò chuyện đã được xóa.',
+    })
+  }
+
+  // Xử lý khi thay đổi bot được chọn
+  const handleBotChange = (botId: string) => {
+    // Nếu đang có cuộc trò chuyện, hỏi xác nhận trước khi chuyển bot
+    if (messages.length > 0 && selectedBot !== botId) {
+      if (confirm('Chuyển sang bot khác sẽ bắt đầu cuộc trò chuyện mới. Bạn có muốn tiếp tục?')) {
+        setMessages([])
+        setSelectedBot(botId)
+      }
+    } else {
+      setSelectedBot(botId)
+    }
   }
 
   const downloadConversation = () => {
@@ -163,6 +218,11 @@ export default function ChatPage() {
           <p className="text-gray-500">
             Tương tác với bot thông minh với khả năng truy vấn tài liệu (RAG)
           </p>
+          {chatId && (
+            <p className="text-xs text-emerald-600 mt-1">
+              Cuộc trò chuyện đang sử dụng lịch sử (ChatID: {chatId.substring(0, 8)}...)
+            </p>
+          )}
         </div>
 
         <div className="flex flex-1 overflow-hidden">
@@ -172,7 +232,10 @@ export default function ChatPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Chọn Bot
               </label>
-              <Select value={selectedBot} onValueChange={setSelectedBot}>
+              <Select 
+                value={selectedBot} 
+                onValueChange={handleBotChange}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn bot để trò chuyện" />
                 </SelectTrigger>
@@ -182,6 +245,11 @@ export default function ChatPage() {
                       <div className="flex items-center">
                         <Bot className="w-4 h-4 mr-2 text-emerald-500" />
                         {bot.name}
+                        {localStorage.getItem(`${CHAT_ID_KEY_PREFIX}${bot.id}`) && (
+                          <span className="ml-2 text-xs bg-emerald-100 text-emerald-700 px-1 rounded">
+                            Có lịch sử
+                          </span>
+                        )}
                       </div>
                     </SelectItem>
                   ))}
@@ -246,6 +314,7 @@ export default function ChatPage() {
                 variant="outline"
                 className="w-full flex items-center justify-center"
                 onClick={downloadConversation}
+                disabled={messages.length === 0}
               >
                 <Download className="w-4 h-4 mr-2" />
                 Tải xuống cuộc trò chuyện
