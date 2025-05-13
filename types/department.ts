@@ -4,6 +4,6 @@ export interface Department {
   code: string
   active: boolean
   created_at: Date
-  updated_at: Date
+  updated_at: Date 
 }
 
