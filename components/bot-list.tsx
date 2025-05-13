@@ -94,7 +94,7 @@ export default function BotList() {
               </TableHead>
               <TableHead className="w-20">Id</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Phòng ban</TableHead>
+              <TableHead>Tenant</TableHead>
               <TableHead>Created at</TableHead>
               <TableHead className="w-32">Thao tác</TableHead>
             </TableRow>

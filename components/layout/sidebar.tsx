@@ -8,7 +8,7 @@ const menuItems = [
   { label: "CHAT BOT", type: "header" },
   { label: "Quản trị", type: "subheader" },
   { label: "Quản lý người dùng", icon: Users, href: "/users" },
-  { label: "Quản lý phòng ban", icon: FileText, href: "/departments" },
+  { label: "Quản lý tenant", icon: FileText, href: "/departments" },
   { label: "Quản lý BOT", icon: Bot, href: "/bots" },
   { label: "Quản lý LLM Model", icon: BarChart2, href: "/models" },
   { label: "Cấu hình", type: "header" },

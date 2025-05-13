@@ -31,11 +31,11 @@ export default function DepartmentsPage() {
       const data = await departmentService.getAll()
       setDepartments(data)
     } catch (error) {
-      console.error("Lỗi khi tải danh sách phòng ban:", error)
+      console.error('Lỗi khi tải danh sách tenant:', error)
       toast({
-        title: "Lỗi",
-        description: "Không thể tải danh sách phòng ban",
-        variant: "destructive",
+        title: 'Lỗi',
+        description: 'Không thể tải danh sách tenant',
+        variant: 'destructive',
       })
     } finally {
       setLoading(false)
@@ -47,66 +47,59 @@ export default function DepartmentsPage() {
       await departmentService.create({
         name: data.name,
         code: data.code,
-        active: data.active === "true",
+        active: data.active === 'true',
       })
-      toast({
-        title: "Thành công",
-        description: "Thêm phòng ban thành công",
-      })
+      toast({ title: 'Thành công', description: 'Thêm tenant thành công' })
       loadDepartments()
       return Promise.resolve()
     } catch (error) {
-      console.error("Lỗi khi thêm phòng ban:", error)
+      console.error('Lỗi khi thêm tenant:', error)
       toast({
-        title: "Lỗi",
-        description: "Không thể thêm phòng ban",
-        variant: "destructive",
+        title: 'Lỗi',
+        description: 'Không thể thêm tenant',
+        variant: 'destructive',
       })
       return Promise.reject(error)
     }
   }
 
   const handleEditDepartment = async (data: Record<string, any>) => {
-    if (!selectedDepartment) return Promise.reject("No department selected")
+    if (!selectedDepartment) return Promise.reject('No department selected')
 
     try {
       await departmentService.update(selectedDepartment.id, {
         name: data.name,
         code: data.code,
-        active: data.active === "true",
+        active: data.active === 'true',
       })
-      toast({
-        title: "Thành công",
-        description: "Cập nhật phòng ban thành công",
-      })
+      toast({ title: 'Thành công', description: 'Cập nhật tenant thành công' })
       loadDepartments()
       return Promise.resolve()
     } catch (error) {
-      console.error("Lỗi khi cập nhật phòng ban:", error)
+      console.error('Lỗi khi cập nhật tenant:', error)
       toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật phòng ban",
-        variant: "destructive",
+        title: 'Lỗi',
+        description: 'Không thể cập nhật tenant',
+        variant: 'destructive',
       })
       return Promise.reject(error)
     }
   }
 
   const handleDeleteDepartment = async (department: Department) => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa phòng ban "${department.name}"?`)) {
+    if (
+      window.confirm(`Bạn có chắc chắn muốn xóa tenant "${department.name}"?`)
+    ) {
       try {
         await departmentService.delete(department.id)
-        toast({
-          title: "Thành công",
-          description: "Xóa phòng ban thành công",
-        })
+        toast({ title: 'Thành công', description: 'Xóa tenant thành công' })
         loadDepartments()
       } catch (error) {
-        console.error("Lỗi khi xóa phòng ban:", error)
+        console.error('Lỗi khi xóa tenant:', error)
         toast({
-          title: "Lỗi",
-          description: "Không thể xóa phòng ban",
-          variant: "destructive",
+          title: 'Lỗi',
+          description: 'Không thể xóa tenant',
+          variant: 'destructive',
         })
       }
     }
@@ -116,40 +109,32 @@ export default function DepartmentsPage() {
     try {
       await departmentService.toggleStatus(department.id, !department.active)
       toast({
-        title: "Thành công",
-        description: `Phòng ban đã được ${department.active ? "vô hiệu hóa" : "kích hoạt"}`,
+        title: 'Thành công',
+        description: `Tenant đã được ${
+          department.active ? 'vô hiệu hóa' : 'kích hoạt'
+        }`,
       })
       loadDepartments()
     } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái phòng ban:", error)
+      console.error('Lỗi khi cập nhật trạng thái tenant:', error)
       toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật trạng thái phòng ban",
-        variant: "destructive",
+        title: 'Lỗi',
+        description: 'Không thể cập nhật trạng thái tenant',
+        variant: 'destructive',
       })
     }
   }
 
   const departmentFields: Field[] = [
+    { name: 'name', label: 'Tên tenant', type: 'text', required: true },
+    { name: 'code', label: 'Mã tenant', type: 'text', required: true },
     {
-      name: "name",
-      label: "Tên phòng ban",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "code",
-      label: "Mã phòng ban",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "active",
-      label: "Trạng thái",
-      type: "select",
+      name: 'active',
+      label: 'Trạng thái',
+      type: 'select',
       options: [
-        { value: "true", label: "Hoạt động" },
-        { value: "false", label: "Không hoạt động" },
+        { value: 'true', label: 'Hoạt động' },
+        { value: 'false', label: 'Không hoạt động' },
       ],
     },
   ]
@@ -157,12 +142,12 @@ export default function DepartmentsPage() {
   const columns = [
     {
       key: "name",
-      header: "Tên phòng ban",
+      header: "Tên tenant",
       cell: (department: Department) => department.name,
     },
     {
       key: "code",
-      header: "Mã phòng ban",
+      header: "Mã tenant",
       cell: (department: Department) => department.code,
     },
     {
@@ -189,8 +174,8 @@ export default function DepartmentsPage() {
     <MainLayout>
       <div className="p-6">
         <EntityHeader
-          title="Danh sách phòng ban"
-          addButtonLabel="Thêm phòng ban"
+          title="Danh sách tenant"
+          addButtonLabel="Thêm tenant"
           onAdd={() => setIsAddDialogOpen(true)}
         />
 
@@ -217,7 +202,7 @@ export default function DepartmentsPage() {
 
         {/* Add Department Dialog */}
         <CrudDialog
-          title="Thêm phòng ban mới"
+          title="Thêm tenant mới"
           fields={departmentFields}
           trigger={<div />} // Hidden trigger, using state to control
           onSubmit={handleAddDepartment}
@@ -228,7 +213,7 @@ export default function DepartmentsPage() {
         {/* Edit Department Dialog */}
         {selectedDepartment && (
           <CrudDialog
-            title={`Chỉnh sửa phòng ban: ${selectedDepartment.name}`}
+            title={`Chỉnh sửa tenant: ${selectedDepartment.name}`}
             fields={departmentFields}
             initialData={{
               name: selectedDepartment.name,
@@ -245,7 +230,7 @@ export default function DepartmentsPage() {
         {/* View Department Dialog */}
         {selectedDepartment && (
           <CrudDialog
-            title={`Chi tiết phòng ban: ${selectedDepartment.name}`}
+            title={`Chi tiết tenant: ${selectedDepartment.name}`}
             fields={departmentFields}
             initialData={{
               name: selectedDepartment.name,

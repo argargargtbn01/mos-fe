@@ -211,7 +211,7 @@ export default function BotsPage() {
     },
     {
       name: 'department',
-      label: 'Phòng ban',
+      label: 'Tenant',
       type: 'select',
       options: departments.map((dept) => ({
         value: dept.id.toString(),
@@ -234,7 +234,7 @@ export default function BotsPage() {
     },
     {
       key: 'department',
-      header: 'Phòng ban',
+      header: 'Tenant',
       cell: (bot: Bot) => bot.department?.name || 'không có thông tin',
     },
     {

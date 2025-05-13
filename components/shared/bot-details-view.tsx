@@ -51,8 +51,8 @@ export function BotDetailsView({ bot }: BotDetailsViewProps) {
                 <p>{bot.slug}</p>
               </div>
               <div>
-                <h4 className="font-medium text-sm text-gray-500">Phòng ban</h4>
-                <p>{bot.department?.name || 'Không có phòng ban'}</p>
+                <h4 className="font-medium text-sm text-gray-500">Tenant</h4>
+                <p>{bot.department?.name || 'Không có tenant'}</p>
               </div>
               <div>
                 <h4 className="font-medium text-sm text-gray-500">Ngày tạo</h4>

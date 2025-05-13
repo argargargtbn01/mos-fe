@@ -14,7 +14,7 @@ const menuItems = [
   { label: "CHAT BOT", type: "header" },
   { label: "Quản trị", type: "subheader" },
   { label: "Quản lý người dùng", icon: Users },
-  { label: "Quản lý phòng ban", icon: FileText },
+  { label: "Quản lý tenant", icon: FileText },
   {
     label: "Quản lý BOT",
     icon: Bot,

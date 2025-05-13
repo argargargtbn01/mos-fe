@@ -8,12 +8,15 @@ import { StatusBadge } from '@/components/shared/status-badge'
 import { ActionButtons } from '@/components/shared/action-buttons'
 import { CrudDialog } from '@/components/shared/crud-dialog'
 import { userService } from '@/src/api/user-api'
+import { departmentService } from '@/src/api/department-api'
+import type { Department } from '@/types/department'
 import type { User } from '@/types/user'
 import type { Field } from '@/types/form'
 import { useToast } from '@/hooks/use-toast'
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
+  const [departments, setDepartments] = useState<Department[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
@@ -23,8 +26,8 @@ export default function UsersPage() {
 
   useEffect(() => {
     loadUsers()
+    loadDepartments()
   }, [])
-
   const loadUsers = async () => {
     try {
       setLoading(true)
@@ -39,6 +42,20 @@ export default function UsersPage() {
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadDepartments = async () => {
+    try {
+      const data = await departmentService.getAll()
+      setDepartments(data)
+    } catch (error) {
+      console.error('Lỗi khi tải danh sách tenant:', error)
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể tải danh sách tenant',
+        variant: 'destructive',
+      })
     }
   }
 
@@ -157,13 +174,12 @@ export default function UsersPage() {
     },
     {
       name: 'department',
-      label: 'Phòng ban',
+      label: 'Tenant',
       type: 'select',
-      options: [
-        { value: '1', label: 'IT Department' },
-        { value: '2', label: 'HR Department' },
-        { value: '3', label: 'Sales Department' },
-      ],
+      options: departments.map((dept) => ({
+        value: dept.id.toString(),
+        label: dept.name,
+      })),
       required: true,
     },
     {
@@ -196,7 +212,7 @@ export default function UsersPage() {
     },
     {
       key: 'department',
-      header: 'Phòng ban',
+      header: 'Tenant',
       cell: (user: User) =>
         (user.department && user.department.name) || 'không có thông tin',
     },
