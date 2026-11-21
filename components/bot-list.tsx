@@ -12,7 +12,7 @@ import { Plus, Lock, Pencil, Eye } from "lucide-react";
 const bots = [
   {
     id: 10,
-    name: "BIC hỏi đáp",
+    name: "BIC Q&A",
     department: "Default Department",
     created: "02-07-2024 09:32",
   },
@@ -76,11 +76,11 @@ export default function BotList() {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Danh sách BOT</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Bot List</h1>
         <div className="flex items-center gap-4">
           <Button className="bg-emerald-600 hover:bg-emerald-700">
             <Plus className="w-4 h-4 mr-2" />
-            THÊM BOT
+            ADD BOT
           </Button>
         </div>
       </div>
@@ -94,9 +94,9 @@ export default function BotList() {
               </TableHead>
               <TableHead className="w-20">Id</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Phòng ban</TableHead>
+              <TableHead>Department</TableHead>
               <TableHead>Created at</TableHead>
-              <TableHead className="w-32">Thao tác</TableHead>
+              <TableHead className="w-32">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -129,7 +129,7 @@ export default function BotList() {
 
         <div className="flex items-center justify-between px-4 py-3 border-t">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-700">Số hàng/trang</span>
+            <span className="text-sm text-gray-700">Rows per page</span>
             <select className="rounded border-gray-300 text-sm">
               <option>10</option>
             </select>

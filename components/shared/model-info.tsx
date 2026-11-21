@@ -13,7 +13,7 @@ interface ModelInfoProps {
 
 export function ModelInfoDisplay({ modelInfo }: ModelInfoProps) {
   if (!modelInfo) {
-    return <div className="text-gray-500 italic">Không có thông tin model</div>
+    return <div className="text-gray-500 italic">No model information</div>
   }
 
   return (
@@ -25,7 +25,7 @@ export function ModelInfoDisplay({ modelInfo }: ModelInfoProps) {
 
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="capabilities">
-          <AccordionTrigger>Khả năng</AccordionTrigger>
+          <AccordionTrigger>Capabilities</AccordionTrigger>
           <AccordionContent>
             <div className="grid grid-cols-2 gap-2">
               <div className="flex items-center gap-2">
@@ -57,7 +57,7 @@ export function ModelInfoDisplay({ modelInfo }: ModelInfoProps) {
         </AccordionItem>
         
         <AccordionItem value="limits">
-          <AccordionTrigger>Giới hạn</AccordionTrigger>
+          <AccordionTrigger>Limits</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
               <div className="flex justify-between">
@@ -85,7 +85,7 @@ export function ModelInfoDisplay({ modelInfo }: ModelInfoProps) {
         </AccordionItem>
         
         <AccordionItem value="params">
-          <AccordionTrigger>Tham số OpenAI hỗ trợ</AccordionTrigger>
+          <AccordionTrigger>Supported OpenAI Parameters</AccordionTrigger>
           <AccordionContent>
             <div className="flex flex-wrap gap-2">
               {modelInfo.model_info.supported_openai_params.map((param) => (

@@ -50,10 +50,10 @@ export function DocumentSyncDialog({
       const data = await botService.getAll()
       setBots(data)
     } catch (error) {
-      console.error('Lỗi khi tải danh sách bot:', error)
+      console.error('Error while loading list bot:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể tải danh sách bot',
+        title: 'Error',
+        description: 'Unable to load bot list',
         variant: 'destructive',
       })
     }
@@ -95,18 +95,18 @@ export function DocumentSyncDialog({
       setSyncComplete(true)
 
       toast({
-        title: 'Đồng bộ thành công',
-        description: 'Tài liệu đã được đồng bộ với bot',
+        title: 'Sync successful',
+        description: 'Documents synced with bot',
       })
 
       if (onSyncComplete) {
         onSyncComplete()
       }
     } catch (error) {
-      console.error('Lỗi khi đồng bộ tài liệu:', error)
+      console.error('Error while syncing document:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể đồng bộ tài liệu với bot',
+        title: 'Error',
+        description: 'Unable to sync document with bot',
         variant: 'destructive',
       })
     } finally {
@@ -118,10 +118,10 @@ export function DocumentSyncDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Đồng bộ tài liệu với Bot</DialogTitle>
+          <DialogTitle>Sync document with Bot</DialogTitle>
           <DialogDescription>
-            Chọn bot để đồng bộ tài liệu này. Bot sẽ sử dụng tài liệu này để trả
-            lời câu hỏi.
+            Select a bot to sync this document with. The bot will use this document to answer
+            questions.
           </DialogDescription>
         </DialogHeader>
 
@@ -129,16 +129,16 @@ export function DocumentSyncDialog({
           {syncComplete ? (
             <div className="flex flex-col items-center gap-4 py-6">
               <CheckCircle size={48} className="text-green-500" />
-              <p className="text-center font-medium">Đồng bộ thành công!</p>
+              <p className="text-center font-medium">Sync successful!</p>
               <p className="text-center text-sm text-gray-500">
-                Tài liệu đã được đồng bộ với bot và sẵn sàng sử dụng.
+                The document has been synced with the bot and is ready to use.
               </p>
             </div>
           ) : (
             <>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">
-                  Chọn Bot
+                  Select Bot
                 </label>
                 <Select
                   value={selectedBotId}
@@ -146,7 +146,7 @@ export function DocumentSyncDialog({
                   disabled={syncing}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn bot" />
+                    <SelectValue placeholder="Select bot" />
                   </SelectTrigger>
                   <SelectContent>
                     {bots.map((bot) => (
@@ -172,7 +172,7 @@ export function DocumentSyncDialog({
 
         <DialogFooter>
           {syncComplete ? (
-            <Button onClick={() => onOpenChange(false)}>Đóng</Button>
+            <Button onClick={() => onOpenChange(false)}>Close</Button>
           ) : (
             <>
               <Button
@@ -180,16 +180,16 @@ export function DocumentSyncDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={syncing}
               >
-                Hủy
+                Cancel
               </Button>
               <Button onClick={handleSync} disabled={!selectedBotId || syncing}>
                 {syncing ? (
                   <>
-                    <RefreshCw size={16} className="mr-2 animate-spin" /> Đang
-                    đồng bộ...
+                    <RefreshCw size={16} className="mr-2 animate-spin" /> Loading
+                    sync...
                   </>
                 ) : (
-                  'Đồng bộ'
+                  'Sync'
                 )}
               </Button>
             </>

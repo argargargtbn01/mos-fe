@@ -19,18 +19,18 @@ export default function RegisterPage() {
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Kiểm tra mật khẩu xác nhận
+    // Validate password confirmation
     if (password !== confirmPassword) {
-      setError("Mật khẩu nhập lại không khớp!");
+      setError("Passwords do not match!");
       return;
     }
     
-    // Lưu thông tin đăng ký vào localStorage (chỉ cho mục đích demo)
+    // Save registration information to localStorage (demo only)
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     users.push({ username, email, password });
     localStorage.setItem("users", JSON.stringify(users));
     
-    // Chuyển hướng đến trang đăng nhập sau khi đăng ký thành công
+    // Redirect to the sign-in page after successful registration
     router.push("/auth/login");
   };
 
@@ -38,9 +38,9 @@ export default function RegisterPage() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Đăng ký</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Sign up</CardTitle>
           <CardDescription className="text-center">
-            Tạo tài khoản mới để sử dụng hệ thống
+            Create a new account to use the system
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -51,10 +51,10 @@ export default function RegisterPage() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="username">Tên đăng nhập</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
-                placeholder="Nhập tên đăng nhập"
+                placeholder="Enter username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -65,44 +65,44 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="Nhập địa chỉ email"
+                placeholder="Enter email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Mật khẩu</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Nhập mật khẩu"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Nhập lại mật khẩu</Label>
+              <Label htmlFor="confirmPassword">Confirm password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Nhập lại mật khẩu"
+                placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
             </div>
             <Button type="submit" className="w-full">
-              Đăng ký
+              Sign up
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-center text-gray-600">
-            Đã có tài khoản?{" "}
+            Already have an account?{" "}
             <Link href="/auth/login" className="text-blue-600 hover:underline">
-              Đăng nhập
+              Sign in
             </Link>
           </p>
         </CardFooter>

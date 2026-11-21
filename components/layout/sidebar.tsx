@@ -6,12 +6,12 @@ import { usePathname } from "next/navigation"
 
 const menuItems = [
   { label: "CHAT BOT", type: "header" },
-  { label: "Quản trị", type: "subheader" },
-  { label: "Quản lý người dùng", icon: Users, href: "/users" },
-  { label: "Quản lý phòng ban", icon: FileText, href: "/departments" },
-  { label: "Quản lý BOT", icon: Bot, href: "/bots" },
-  { label: "Quản lý LLM Model", icon: BarChart2, href: "/models" },
-  { label: "Cấu hình", type: "header" },
+  { label: "Administration", type: "subheader" },
+  { label: "User Management", icon: Users, href: "/users" },
+  { label: "Department Management", icon: FileText, href: "/departments" },
+  { label: "Bot Management", icon: Bot, href: "/bots" },
+  { label: "LLM Model Management", icon: BarChart2, href: "/models" },
+  { label: "Configuration", type: "header" },
   { label: "Chat setting", icon: MessageCircle, href: "/chat" },
   { label: "Document setting", icon: Settings, href: "/documents" },
 ]

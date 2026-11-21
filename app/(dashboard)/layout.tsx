@@ -29,11 +29,11 @@ export default function DashboardLayout({
               <div className="flex items-center space-x-4">
                 {user && (
                   <div className="text-sm">
-                    Xin chào, <span className="font-semibold">{user.username}</span>
+                    Hello, <span className="font-semibold">{user.username}</span>
                   </div>
                 )}
                 <Button variant="outline" onClick={logout}>
-                  Đăng xuất
+                  Sign out
                 </Button>
               </div>
             </div>

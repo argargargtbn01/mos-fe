@@ -106,7 +106,7 @@ export function DataTable<T extends { id: string | number }>({
                 </TableHead>
               ))}
 
-              {actions && <TableHead className="w-32">Thao tác</TableHead>}
+              {actions && <TableHead className="w-32">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -118,7 +118,7 @@ export function DataTable<T extends { id: string | number }>({
                   }
                   className="text-center py-8 text-gray-500"
                 >
-                  Không có dữ liệu
+                  No data
                 </TableCell>
               </TableRow>
             ) : (

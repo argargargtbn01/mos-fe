@@ -132,12 +132,12 @@ export function CrudDialog({
           <DialogFooter>
             {!readOnly && (
               <Button type="submit" disabled={loading}>
-                {loading ? "Đang xử lý..." : "Lưu"}
+                {loading ? "Processing..." : "Save"}
               </Button>
             )}
             {readOnly && (
               <Button type="button" onClick={() => onOpenChange?.(false)}>
-                Đóng
+                Close
               </Button>
             )}
           </DialogFooter>

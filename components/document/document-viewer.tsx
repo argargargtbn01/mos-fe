@@ -34,7 +34,7 @@ export function DocumentViewer({
       const data = await documentService.getDocumentChunks(document.id)
       setChunks(data)
     } catch (error) {
-      console.error('Lỗi khi tải đoạn tài liệu:', error)
+      console.error('Error while loading document chunk:', error)
     } finally {
       setLoading(false)
     }
@@ -52,7 +52,7 @@ export function DocumentViewer({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>Xem tài liệu: {document.filename}</DialogTitle>
+          <DialogTitle>View document: {document.filename}</DialogTitle>
         </DialogHeader>
 
         <Tabs
@@ -60,9 +60,9 @@ export function DocumentViewer({
           className="flex-1 overflow-hidden flex flex-col"
         >
           <TabsList>
-            <TabsTrigger value="content">Nội dung</TabsTrigger>
-            <TabsTrigger value="chunks">Đoạn văn bản</TabsTrigger>
-            <TabsTrigger value="metadata">Thông tin</TabsTrigger>
+            <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="chunks">Text chunks</TabsTrigger>
+            <TabsTrigger value="metadata">Information</TabsTrigger>
           </TabsList>
 
           <TabsContent value="content" className="flex-1 overflow-auto p-4">
@@ -78,11 +78,11 @@ export function DocumentViewer({
           <TabsContent value="chunks" className="flex-1 overflow-auto p-1">
             {loading ? (
               <div className="flex items-center justify-center h-full">
-                <p>Đang tải...</p>
+                <p>Loading...</p>
               </div>
             ) : chunks.length === 0 ? (
               <div className="flex items-center justify-center h-full">
-                <p className="text-gray-500">Không có đoạn văn bản nào</p>
+                <p className="text-gray-500">No text chunks available</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -111,7 +111,7 @@ export function DocumentViewer({
                 <p className="font-medium text-xs">{document.id}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Tên file</p>
+                <p className="text-sm text-gray-500">File name</p>
                 <p className="font-medium">{document.filename}</p>
               </div>
               <div>
@@ -123,11 +123,11 @@ export function DocumentViewer({
                 <p className="font-medium">{document.botId}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Trạng thái</p>
+                <p className="text-sm text-gray-500">Status</p>
                 <p className="font-medium">{document.status}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Ngày tạo</p>
+                <p className="text-sm text-gray-500">Created date</p>
                 <p className="font-medium">
                   {new Date(document.createdAt).toLocaleDateString('vi-VN', {
                     year: 'numeric',
@@ -139,7 +139,7 @@ export function DocumentViewer({
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Ngày cập nhật</p>
+                <p className="text-sm text-gray-500">Updated date</p>
                 <p className="font-medium">
                   {new Date(document.updatedAt).toLocaleDateString('vi-VN', {
                     year: 'numeric',

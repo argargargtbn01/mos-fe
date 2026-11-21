@@ -46,7 +46,7 @@ export default function BotsPage() {
           modelService.getModels(),
         ])
 
-      // Chuyển đổi dữ liệu từ API sang định dạng Bot[]
+      // Transform API data into Bot[]
       const botsData = botsWithModelInfoData.map((item) => ({
         ...item.bot,
         modelInfo: item.modelInfo,
@@ -56,10 +56,10 @@ export default function BotsPage() {
       setDepartments(departmentsData)
       setModels(modelsData)
     } catch (error) {
-      console.error('Lỗi khi tải dữ liệu:', error)
+      console.error('Error while loading data:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể tải dữ liệu',
+        title: 'Error',
+        description: 'Unable to load data',
         variant: 'destructive',
       })
     } finally {
@@ -85,17 +85,17 @@ export default function BotsPage() {
       })
 
       toast({
-        title: 'Thành công',
-        description: 'Thêm bot thành công',
+        title: 'Success',
+        description: 'Bot added successfully',
       })
 
       loadData()
       return Promise.resolve()
     } catch (error) {
-      console.error('Lỗi khi thêm bot:', error)
+      console.error('Error while adding bot:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể thêm bot',
+        title: 'Error',
+        description: 'Unable to add bot',
         variant: 'destructive',
       })
       return Promise.reject(error)
@@ -121,17 +121,17 @@ export default function BotsPage() {
       })
 
       toast({
-        title: 'Thành công',
-        description: 'Cập nhật bot thành công',
+        title: 'Success',
+        description: 'Bot updated successfully',
       })
 
       loadData()
       return Promise.resolve()
     } catch (error) {
-      console.error('Lỗi khi cập nhật bot:', error)
+      console.error('Error while updating bot:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể cập nhật bot',
+        title: 'Error',
+        description: 'Unable to update bot',
         variant: 'destructive',
       })
       return Promise.reject(error)
@@ -139,19 +139,19 @@ export default function BotsPage() {
   }
 
   const handleDeleteBot = async (bot: Bot) => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa bot "${bot.name}"?`)) {
+    if (window.confirm(`Are you sure you want to delete bot "${bot.name}"?`)) {
       try {
         await botService.delete(bot.id)
         toast({
-          title: 'Thành công',
-          description: 'Xóa bot thành công',
+          title: 'Success',
+          description: 'Bot deleted successfully',
         })
         loadData()
       } catch (error) {
-        console.error('Lỗi khi xóa bot:', error)
+        console.error('Error while deleting bot:', error)
         toast({
-          title: 'Lỗi',
-          description: 'Không thể xóa bot',
+          title: 'Error',
+          description: 'Unable to delete bot',
           variant: 'destructive',
         })
       }
@@ -161,7 +161,7 @@ export default function BotsPage() {
   const handleViewBot = async (bot: Bot) => {
     try {
       if (bot.modelName && !bot.modelInfo) {
-        // Nếu bot có model nhưng chưa có thông tin chi tiết, tải thông tin model
+        // If the bot has a model but no detailed information, load the model information
         const botWithInfo = await botService.getWithModelInfo(bot.id)
         setSelectedBot({
           ...bot,
@@ -172,14 +172,14 @@ export default function BotsPage() {
       }
       setIsViewDialogOpen(true)
     } catch (error) {
-      console.error('Lỗi khi tải thông tin chi tiết bot:', error)
+      console.error('Error while loading detailed bot information:', error)
     }
   }
 
   const botFields: Field[] = [
     {
       name: 'name',
-      label: 'Tên bot',
+      label: 'Bot Name',
       type: 'text',
       required: true,
     },
@@ -191,7 +191,7 @@ export default function BotsPage() {
     },
     {
       name: 'description',
-      label: 'Mô tả',
+      label: 'Description',
       type: 'textarea',
     },
     {
@@ -211,7 +211,7 @@ export default function BotsPage() {
     },
     {
       name: 'department',
-      label: 'Phòng ban',
+      label: 'Department',
       type: 'select',
       options: departments.map((dept) => ({
         value: dept.id.toString(),
@@ -229,22 +229,22 @@ export default function BotsPage() {
     },
     {
       key: 'name',
-      header: 'Tên bot',
+      header: 'Bot Name',
       cell: (bot: Bot) => bot.name,
     },
     {
       key: 'department',
-      header: 'Phòng ban',
-      cell: (bot: Bot) => bot.department?.name || 'không có thông tin',
+      header: 'Department',
+      cell: (bot: Bot) => bot.department?.name || 'no information',
     },
     {
       key: 'model',
       header: 'Model',
-      cell: (bot: Bot) => bot.modelName || 'không có thông tin',
+      cell: (bot: Bot) => bot.modelName || 'no information',
     },
     {
       key: 'created_at',
-      header: 'Ngày tạo',
+      header: 'Created date',
       cell: (bot: Bot) => new Date(bot.created_at).toLocaleDateString('vi-VN'),
     },
   ]
@@ -252,7 +252,7 @@ export default function BotsPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="p-6">Đang tải dữ liệu...</div>
+        <div className="p-6">Loading data...</div>
       </MainLayout>
     )
   }
@@ -261,8 +261,8 @@ export default function BotsPage() {
     <MainLayout>
       <div className="p-6">
         <EntityHeader
-          title="Danh sách BOT"
-          addButtonLabel="Thêm BOT"
+          title="Bot List"
+          addButtonLabel="Add Bot"
           onAdd={() => setIsAddDialogOpen(true)}
         />
 
@@ -284,7 +284,7 @@ export default function BotsPage() {
 
         {/* Add Bot Dialog */}
         <CrudDialog
-          title="Thêm BOT mới"
+          title="Add New Bot"
           fields={botFields}
           trigger={<div />} // Hidden trigger, using state to control
           onSubmit={handleAddBot}
@@ -295,7 +295,7 @@ export default function BotsPage() {
         {/* Edit Bot Dialog */}
         {selectedBot && (
           <CrudDialog
-            title={`Chỉnh sửa BOT: ${selectedBot.name}`}
+            title={`Edit Bot: ${selectedBot.name}`}
             fields={botFields}
             initialData={{
               name: selectedBot.name,
@@ -317,7 +317,7 @@ export default function BotsPage() {
           <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Chi tiết BOT: {selectedBot.name}</DialogTitle>
+                <DialogTitle>Bot Details: {selectedBot.name}</DialogTitle>
               </DialogHeader>
               <BotDetailsView bot={selectedBot} />
             </DialogContent>

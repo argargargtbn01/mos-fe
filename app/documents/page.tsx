@@ -37,10 +37,10 @@ export default function DocumentsPage() {
       const data = await botService.getAll()
       setBots(data)
     } catch (error) {
-      console.error("Lỗi khi tải danh sách bot:", error)
+      console.error("Error while loading list bot:", error)
       toast({
-        title: "Lỗi",
-        description: "Không thể tải danh sách bot",
+        title: "Error",
+        description: "Unable to load bot list",
         variant: "destructive",
       })
     }
@@ -60,10 +60,10 @@ export default function DocumentsPage() {
 
       setDocuments(data)
     } catch (error) {
-      console.error("Lỗi khi tải danh sách tài liệu:", error)
+      console.error("Error while loading list document:", error)
       toast({
-        title: "Lỗi",
-        description: "Không thể tải danh sách tài liệu",
+        title: "Error",
+        description: "Unable to load document list",
         variant: "destructive",
       })
     } finally {
@@ -74,21 +74,21 @@ export default function DocumentsPage() {
   const handleDeleteDocument = async (document: Document) => {
     if (
       window.confirm(
-        `Bạn có chắc chắn muốn xóa tài liệu "${document.filename}"? Điều này sẽ xóa tài liệu khỏi hệ thống.`,
+        `Are you sure you want to delete document "${document.filename}"? This will remove the document from the system.`,
       )
     ) {
       try {
         await documentService.delete(document.id)
         toast({
-          title: "Thành công",
-          description: "Xóa tài liệu thành công",
+          title: "Success",
+          description: "Document deleted successfully",
         })
         loadDocuments()
       } catch (error) {
-        console.error("Lỗi khi xóa tài liệu:", error)
+        console.error("Error while deleting document:", error)
         toast({
-          title: "Lỗi",
-          description: "Không thể xóa tài liệu",
+          title: "Error",
+          description: "Unable to delete document",
           variant: "destructive",
         })
       }
@@ -98,20 +98,20 @@ export default function DocumentsPage() {
   const handleRemoveFromBot = async (document: Document) => {
     if (selectedBotId === "all" || !document.botId) return
 
-    if (window.confirm(`Bạn có chắc chắn muốn xóa tài liệu "${document.filename}" khỏi bot này?`)) {
+    if (window.confirm(`Are you sure you want to delete document "${document.filename}" from this bot?`)) {
       try {
         const botId = Number.parseInt(selectedBotId)
         await documentService.removeFromBot(document.id, botId)
         toast({
-          title: "Thành công",
-          description: "Đã xóa tài liệu khỏi bot này",
+          title: "Success",
+          description: "Document removed from this bot",
         })
         loadDocuments()
       } catch (error) {
-        console.error("Lỗi khi xóa tài liệu khỏi bot:", error)
+        console.error("Error while deleting document from bot:", error)
         toast({
-          title: "Lỗi",
-          description: "Không thể xóa tài liệu khỏi bot",
+          title: "Error",
+          description: "Unable to remove document from bot",
           variant: "destructive",
         })
       }
@@ -127,21 +127,21 @@ export default function DocumentsPage() {
     loadDocuments()
     setActiveTab("all")
     toast({
-      title: "Thành công",
-      description: "Tài liệu đã được tải lên thành công",
+      title: "Success",
+      description: "Document uploaded successfully",
     })
   }
 
   const getSelectedBotName = () => {
-    if (selectedBotId === "all") return "Tất cả Bot"
+    if (selectedBotId === "all") return "All Bots"
     const bot = bots.find((b) => b.id.toString() === selectedBotId)
-    return bot ? bot.name : "Bot không xác định"
+    return bot ? bot.name : "Unknown bot"
   }
 
   if (loading && documents.length === 0) {
     return (
       <MainLayout>
-        <div className="p-6">Đang tải dữ liệu...</div>
+        <div className="p-6">Loading data...</div>
       </MainLayout>
     )
   }
@@ -150,19 +150,19 @@ export default function DocumentsPage() {
     <MainLayout>
       <div className="p-6">
         <EntityHeader
-          title="Quản lý tài liệu"
-          addButtonLabel="Tải lên tài liệu mới"
+          title="Document Management"
+          addButtonLabel="Upload New Document"
           onAdd={() => setActiveTab("upload")}
         />
 
         <div className="mb-6 mt-4">
-          <label className="block text-sm font-medium mb-2">Chọn Bot</label>
+          <label className="block text-sm font-medium mb-2">Select Bot</label>
           <Select value={selectedBotId} onValueChange={setSelectedBotId}>
             <SelectTrigger className="w-full md:w-[300px]">
-              <SelectValue placeholder="Chọn Bot" />
+              <SelectValue placeholder="Select Bot" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tất cả Bot</SelectItem>
+              <SelectItem value="all">All Bots</SelectItem>
               {bots.map((bot) => (
                 <SelectItem key={bot.id} value={bot.id.toString()}>
                   {bot.name}
@@ -175,10 +175,10 @@ export default function DocumentsPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
           <TabsList>
             <TabsTrigger value="all">
-              Tài liệu {selectedBotId !== "all" ? `của ${getSelectedBotName()}` : ""} ({documents.length})
+              Documents {selectedBotId !== "all" ? `of ${getSelectedBotName()}` : ""} ({documents.length})
             </TabsTrigger>
             <TabsTrigger value="upload">
-              Tải lên tài liệu mới {selectedBotId !== "all" ? `cho ${getSelectedBotName()}` : ""}
+              Upload New Document {selectedBotId !== "all" ? `for ${getSelectedBotName()}` : ""}
             </TabsTrigger>
           </TabsList>
 
@@ -188,7 +188,7 @@ export default function DocumentsPage() {
               onDelete={selectedBotId === "all" ? handleDeleteDocument : handleRemoveFromBot}
               onView={handleViewDocument}
               showBotInfo={selectedBotId === "all"}
-              deleteLabel={selectedBotId === "all" ? "Xóa" : "Xóa khỏi bot"}
+              deleteLabel={selectedBotId === "all" ? "Delete" : "Remove from bot"}
             />
           </TabsContent>
 

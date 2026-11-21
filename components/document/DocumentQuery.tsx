@@ -15,7 +15,7 @@ import { Loader2, Send } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import axios from 'axios'
 
-// Tạo instance API trực tiếp thay vì import từ file riêng
+// Create the API instance directly instead of importing it from a separate file
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://quang1709.ddns.net:3000',
   headers: {
@@ -23,7 +23,7 @@ const api = axios.create({
   },
 })
 
-// Tạo một toast component đơn giản
+// Create a simple toast component
 const useToast = () => {
   const showToast = (message: {
     title: string
@@ -31,7 +31,7 @@ const useToast = () => {
     variant?: string
   }) => {
     console.error(`${message.title}: ${message.description}`)
-    // Hiển thị toast bằng alert trong trường hợp không có toast component
+    // Display the toast with an alert when no toast component is available
     alert(`${message.title}: ${message.description}`)
   }
 
@@ -76,10 +76,10 @@ export function DocumentQuery({ botId }: DocumentQueryProps) {
 
       setResponse(result.data)
     } catch (error) {
-      console.error('Lỗi khi gửi câu hỏi:', error)
+      console.error('Error while sending question:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể xử lý câu hỏi của bạn. Vui lòng thử lại sau.',
+        title: 'Error',
+        description: 'Unable to process your question. Please try again later.',
         variant: 'destructive',
       })
     } finally {
@@ -91,15 +91,15 @@ export function DocumentQuery({ botId }: DocumentQueryProps) {
     <div className="flex flex-col space-y-4 w-full">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Hỏi đáp tài liệu</CardTitle>
+          <CardTitle>Document Q&A</CardTitle>
           <CardDescription>
-            Đặt câu hỏi về nội dung trong tài liệu của bạn
+            Ask questions about the content of your documents
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex items-center space-x-2">
             <Input
-              placeholder="Nhập câu hỏi của bạn..."
+              placeholder="Enter your question..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               disabled={isLoading}
@@ -111,7 +111,7 @@ export function DocumentQuery({ botId }: DocumentQueryProps) {
               ) : (
                 <Send className="h-4 w-4" />
               )}
-              <span className="ml-2">Gửi</span>
+              <span className="ml-2">Send</span>
             </Button>
           </form>
         </CardContent>
@@ -120,9 +120,9 @@ export function DocumentQuery({ botId }: DocumentQueryProps) {
       {response && (
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>Câu trả lời</CardTitle>
+            <CardTitle>Answer</CardTitle>
             <CardDescription>
-              Kết quả dựa trên dữ liệu từ tài liệu của bạn
+              Results based on data from your documents
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -132,7 +132,7 @@ export function DocumentQuery({ botId }: DocumentQueryProps) {
 
             {response.sources && response.sources.length > 0 && (
               <div>
-                <h4 className="text-sm font-medium mb-2">Nguồn tài liệu:</h4>
+                <h4 className="text-sm font-medium mb-2">Document sources:</h4>
                 <div className="space-y-2">
                   {response.sources.map((source, index) => (
                     <div
@@ -155,7 +155,7 @@ export function DocumentQuery({ botId }: DocumentQueryProps) {
             )}
           </CardContent>
           <CardFooter className="text-xs text-muted-foreground">
-            Câu hỏi: "{response.query}" •{' '}
+            Question: "{response.query}" •{' '}
             {new Date(response.timestamp).toLocaleString()}
           </CardFooter>
         </Card>

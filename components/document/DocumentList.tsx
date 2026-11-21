@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FileText, Trash2, UploadCloud } from "lucide-react";
 import axios from 'axios';
 
-// Tạo instance API trực tiếp thay vì import từ file riêng
+// Create the API instance directly instead of importing it from a separate file
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://quang1709.ddns.net:3000',
   headers: {
@@ -15,11 +15,11 @@ const api = axios.create({
   },
 });
 
-// Tạo một toast component đơn giản
+// Create a simple toast component
 const useToast = () => {
   const showToast = (message: { title: string; description: string; variant?: string }) => {
     console.error(`${message.title}: ${message.description}`);
-    // Hiển thị toast bằng alert trong trường hợp không có toast component
+    // Display the toast with an alert when no toast component is available
     alert(`${message.title}: ${message.description}`);
   };
 
@@ -50,8 +50,8 @@ export function DocumentList({ botId }: DocumentListProps) {
     } catch (error) {
       console.error('Error fetching documents:', error);
       toast({
-        title: "Lỗi",
-        description: "Không thể tải danh sách tài liệu. Vui lòng thử lại sau.",
+        title: "Error",
+        description: "Unable to load document list. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -64,7 +64,7 @@ export function DocumentList({ botId }: DocumentListProps) {
   }, [fetchDocuments]);
 
   const handleDelete = async (documentId: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa tài liệu này?')) {
+    if (!confirm('Are you sure you want to delete this document?')) {
       return;
     }
 
@@ -72,21 +72,21 @@ export function DocumentList({ botId }: DocumentListProps) {
       await api.delete(`/documents/${documentId}`);
       setDocuments(documents.filter(doc => doc.id !== documentId));
       toast({
-        title: "Thành công",
-        description: "Đã xóa tài liệu.",
+        title: "Success",
+        description: "Document deleted successfully.",
       });
     } catch (error) {
       console.error('Error deleting document:', error);
       toast({
-        title: "Lỗi",
-        description: "Không thể xóa tài liệu. Vui lòng thử lại sau.",
+        title: "Error",
+        description: "Unable to delete the document. Please try again later.",
         variant: "destructive"
       });
     }
   };
 
   const formatFileSize = (bytes?: number) => {
-    if (!bytes) return 'Không có thông tin';
+    if (!bytes) return 'No information';
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
@@ -107,8 +107,8 @@ export function DocumentList({ botId }: DocumentListProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Tài liệu của bot</CardTitle>
-          <CardDescription>Danh sách tài liệu đã tải lên</CardDescription>
+          <CardTitle>Bot Documents</CardTitle>
+          <CardDescription>List of uploaded documents</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -124,14 +124,14 @@ export function DocumentList({ botId }: DocumentListProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Tài liệu của bot</CardTitle>
-        <CardDescription>Danh sách tài liệu đã tải lên</CardDescription>
+        <CardTitle>Bot Documents</CardTitle>
+        <CardDescription>List of uploaded documents</CardDescription>
       </CardHeader>
       <CardContent>
         {documents.length === 0 ? (
           <div className="text-center py-6">
             <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground" />
-            <p className="mt-2 text-sm text-muted-foreground">Chưa có tài liệu nào. Tải lên tài liệu để bắt đầu.</p>
+            <p className="mt-2 text-sm text-muted-foreground">No documents yet. Upload a document to get started.</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -153,7 +153,7 @@ export function DocumentList({ botId }: DocumentListProps) {
                   variant="ghost" 
                   size="icon"
                   onClick={() => handleDelete(doc.id)}
-                  title="Xóa tài liệu"
+                  title="Delete document"
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>

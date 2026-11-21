@@ -32,7 +32,7 @@ interface BotOption {
   name: string
 }
 
-// Khóa localStorage để lưu chatId theo từng bot
+// Use localStorage to save chatId for each bot
 const CHAT_ID_KEY_PREFIX = 'chat_id_for_bot_'
 
 export default function ChatPage() {
@@ -47,43 +47,43 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
-  // Lấy danh sách bot khi trang được tải
+  // Load the bot list when the page loads
   useEffect(() => {
     const fetchBots = async () => {
       try {
         const response = await botService.getAll()
         setBots(response)
       } catch (error) {
-        console.error('Lỗi khi lấy danh sách bot:', error)
+        console.error('Error while loading the bot list:', error)
         toast({
-          title: 'Lỗi',
-          description: 'Không thể lấy danh sách bot. Vui lòng thử lại sau.',
+          title: 'Error',
+          description: 'Unable to load bot list. Please try again later.',
           variant: 'destructive',
         })
       }
     }
 
     fetchBots()
-    // Loại bỏ dependency toast, chỉ chạy 1 lần khi component mount
+    // Ignore the toast dependency and run once when the component mounts
   }, [])
 
-  // Effect để scroll xuống dưới khi có tin nhắn mới
+  // Scroll down when new messages arrive
   useEffect(() => {
     scrollToBottom()
   }, [messages])
 
-  // Effect để load chatId từ localStorage khi chọn bot
+  // Load chatId from localStorage when selecting a bot
   useEffect(() => {
     if (selectedBot) {
       const storedChatId = localStorage.getItem(`${CHAT_ID_KEY_PREFIX}${selectedBot}`)
       setChatId(storedChatId)
       
-      // Nếu có chatId được lưu, hiển thị thông báo
+      // If a chatId is saved, show a notification
       if (storedChatId && messages.length === 0) {
         setMessages([{
           id: 'system-message',
           role: 'bot',
-          content: 'Tiếp tục cuộc trò chuyện trước đó với bot này. Lịch sử trò chuyện đã được lưu lại.',
+          content: 'Continue the previous conversation with this bot. Chat history has been saved.',
           timestamp: new Date()
         }])
       }
@@ -110,20 +110,20 @@ export default function ChatPage() {
     setIsLoading(true)
 
     try {
-      // Gọi API chat với chatId (nếu có) để duy trì lịch sử trò chuyện
+      // Call the chat API with chatId, if available, to preserve conversation history
       const response = await axiosInstance.post('/chat', {
         botId: parseInt(selectedBot),
         query: userMessage.content,
         useRAG: true,
         temperature: temperature,
         maxTokens: maxTokens,
-        chatId: chatId // Thêm chatId vào request nếu có
+        chatId: chatId // Add chatId to the request if available
       })
 
-      // Lưu chatId nhận được từ server
+      // Save the chatId received from the server
       if (response.data.chatId) {
         setChatId(response.data.chatId)
-        // Lưu chatId vào localStorage để dùng cho lần tiếp theo
+        // Save chatId to localStorage for the next time
         localStorage.setItem(`${CHAT_ID_KEY_PREFIX}${selectedBot}`, response.data.chatId)
       }
 
@@ -137,10 +137,10 @@ export default function ChatPage() {
 
       setMessages((prev) => [...prev, botMessage])
     } catch (error) {
-      console.error('Lỗi khi gửi tin nhắn:', error)
+      console.error('Error while sending message:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể xử lý yêu cầu của bạn. Vui lòng thử lại sau.',
+        title: 'Error',
+        description: 'Unable to process your request. Please try again later.',
         variant: 'destructive',
       })
 
@@ -148,7 +148,7 @@ export default function ChatPage() {
         id: (Date.now() + 1).toString(),
         role: 'bot',
         content:
-          'Xin lỗi, đã xảy ra lỗi khi xử lý yêu cầu của bạn. Vui lòng thử lại sau.',
+          'Sorry, an error occurred while processing your request. Please try again later.',
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, errorMessage])
@@ -167,23 +167,23 @@ export default function ChatPage() {
   const clearConversation = () => {
     setMessages([])
     
-    // Xóa chatId khỏi state và localStorage
+    // Delete chatId from state and localStorage
     if (selectedBot) {
       localStorage.removeItem(`${CHAT_ID_KEY_PREFIX}${selectedBot}`)
       setChatId(null)
     }
 
     toast({
-      title: 'Đã làm mới cuộc trò chuyện',
-      description: 'Lịch sử trò chuyện đã được xóa.',
+      title: 'Conversation refreshed successfully',
+      description: 'Chat history has been cleared.',
     })
   }
 
-  // Xử lý khi thay đổi bot được chọn
+  // Handle bot selection changes
   const handleBotChange = (botId: string) => {
-    // Nếu đang có cuộc trò chuyện, hỏi xác nhận trước khi chuyển bot
+    // If there is an active conversation, ask for confirmation before switching bots
     if (messages.length > 0 && selectedBot !== botId) {
-      if (confirm('Chuyển sang bot khác sẽ bắt đầu cuộc trò chuyện mới. Bạn có muốn tiếp tục?')) {
+      if (confirm('Switching to another bot will start a new conversation. Do you want to continue?')) {
         setMessages([])
         setSelectedBot(botId)
       }
@@ -213,14 +213,14 @@ export default function ChatPage() {
       <div className="flex flex-col h-screen">
         <div className="p-4 border-b">
           <h1 className="text-2xl font-semibold text-gray-900">
-            Trò chuyện với Bot
+            Chat with Bot
           </h1>
           <p className="text-gray-500">
-            Tương tác với bot thông minh với khả năng truy vấn tài liệu (RAG)
+            Interact with an intelligent bot with document query capabilities (RAG)
           </p>
           {chatId && (
             <p className="text-xs text-emerald-600 mt-1">
-              Cuộc trò chuyện đang sử dụng lịch sử (ChatID: {chatId.substring(0, 8)}...)
+              This conversation is using history (ChatID: {chatId.substring(0, 8)}...)
             </p>
           )}
         </div>
@@ -230,14 +230,14 @@ export default function ChatPage() {
           <div className="w-80 border-r bg-gray-50 p-4 flex flex-col">
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Chọn Bot
+                Select Bot
               </label>
               <Select 
                 value={selectedBot} 
                 onValueChange={handleBotChange}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn bot để trò chuyện" />
+                  <SelectValue placeholder="Select a bot to chat with" />
                 </SelectTrigger>
                 <SelectContent>
                   {bots.map((bot) => (
@@ -247,7 +247,7 @@ export default function ChatPage() {
                         {bot.name}
                         {localStorage.getItem(`${CHAT_ID_KEY_PREFIX}${bot.id}`) && (
                           <span className="ml-2 text-xs bg-emerald-100 text-emerald-700 px-1 rounded">
-                            Có lịch sử
+                            Has history
                           </span>
                         )}
                       </div>
@@ -259,7 +259,7 @@ export default function ChatPage() {
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cài đặt
+                Settings
               </label>
               <Card>
                 <CardContent className="p-4">
@@ -307,7 +307,7 @@ export default function ChatPage() {
                 onClick={clearConversation}
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Làm mới cuộc trò chuyện
+                Refresh conversation
               </Button>
 
               <Button
@@ -317,7 +317,7 @@ export default function ChatPage() {
                 disabled={messages.length === 0}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Tải xuống cuộc trò chuyện
+                Download conversation
               </Button>
             </div>
           </div>
@@ -330,7 +330,7 @@ export default function ChatPage() {
                 <div className="h-full flex items-center justify-center text-gray-400">
                   <div className="text-center">
                     <Bot className="w-12 h-12 mx-auto mb-4 text-emerald-600" />
-                    <p>Chọn một bot và bắt đầu cuộc trò chuyện</p>
+                    <p>Select a bot and start a conversation</p>
                   </div>
                 </div>
               ) : (
@@ -356,7 +356,7 @@ export default function ChatPage() {
                         )}
                         <span className="text-xs opacity-75">
                           {message.role === 'user'
-                            ? 'Bạn'
+                            ? 'You'
                             : bots.find((b) => b.id.toString() === selectedBot)
                                 ?.name || 'Bot'}
                         </span>
@@ -365,11 +365,11 @@ export default function ChatPage() {
                         {message.content}
                       </div>
 
-                      {/* Hiển thị sources nếu có */}
+                      {/* Display sources if available */}
                       {message.sources && message.sources.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-gray-200">
                           <p className="text-xs font-medium mb-2">
-                            Nguồn tài liệu:
+                            Document sources:
                           </p>
                           <div className="space-y-2">
                             {message.sources.map((source, idx) => (
@@ -427,7 +427,7 @@ export default function ChatPage() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Nhập tin nhắn..."
+                  placeholder="Enter a message..."
                   className="flex-1 resize-none"
                   rows={3}
                   disabled={!selectedBot || isLoading}
@@ -441,7 +441,7 @@ export default function ChatPage() {
                 </Button>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Nhấn Enter để gửi, Shift+Enter để xuống dòng
+                Press Enter to send, Shift+Enter for a new line
               </p>
             </div>
           </div>

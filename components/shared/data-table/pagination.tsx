@@ -70,7 +70,7 @@ export function Pagination({
   return (
     <div className="flex items-center justify-between px-4 py-3 border-t">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-700">Số hàng/trang</span>
+        <span className="text-sm text-gray-700">Rows per page</span>
         <Select value={rowsPerPage.toString()} onValueChange={onRowsPerPageChange}>
           <SelectTrigger className="w-16">
             <SelectValue placeholder={rowsPerPage.toString()} />

@@ -7,10 +7,10 @@ class UserService extends BaseApiService<User> {
     super('/users')
   }
 
-  // Ghi đè phương thức getAll để xử lý đặc biệt với API users
+  // Override the method getAll to handle the API specifically users
   async getAll(): Promise<User[]> {
     const response = await axiosInstance.get(this.endpoint)
-    // Kiểm tra cấu trúc phản hồi và trích xuất mảng users từ response.data.data
+    // Check the response structure and extract the users array from response.data.data
     if (
       response.data &&
       response.data.data &&
@@ -18,18 +18,18 @@ class UserService extends BaseApiService<User> {
     ) {
       return response.data.data
     }
-    // Fallback nếu cấu trúc khác với mong đợi
+    // Fallback if the structure differs from expected
     return response.data
   }
 
-  // Ghi đè phương thức create để đổi tên trường cho phù hợp với backend
+  // Override the method create to rename fields for the backend
   async create(data: Partial<User>): Promise<User> {
     const formattedData = this.formatUserData(data)
     const response = await axiosInstance.post(this.endpoint, formattedData)
     return response.data.data || response.data
   }
 
-  // Ghi đè phương thức update để đổi tên trường cho phù hợp với backend
+  // Override the method update to rename fields for the backend
   async update(id: number, data: Partial<User>): Promise<User> {
     const formattedData = this.formatUserData(data)
     const response = await axiosInstance.put(
@@ -39,13 +39,13 @@ class UserService extends BaseApiService<User> {
     return response.data.data || response.data
   }
 
-  // Hàm format lại dữ liệu user để phù hợp với BE
+  // Format user data for the backend
   private formatUserData(data: Partial<User>): any {
     const result: any = { ...data }
 
-    // Chuyển đổi department -> departmentId
+    // Convert department to departmentId
     if (result.department !== undefined) {
-      // Nếu đã là số thì giữ nguyên, nếu là string thì parse
+      // Keep numbers as-is and parse strings
       result.departmentId =
         typeof result.department === 'number'
           ? result.department
@@ -53,9 +53,9 @@ class UserService extends BaseApiService<User> {
       delete result.department
     }
 
-    // Chuyển đổi role -> roleId
+    // Convert role to roleId
     if (result.role !== undefined) {
-      // Nếu đã là số thì giữ nguyên, nếu là string thì parse
+      // Keep numbers as-is and parse strings
       result.roleId =
         typeof result.role === 'number'
           ? result.role

@@ -39,7 +39,7 @@ export function DocumentUploader({
         setSelectedBot(null)
       }
     } catch (error) {
-      console.error('Lỗi khi tải thông tin bot:', error)
+      console.error('Error while loading information bot:', error)
     }
   }, [botId])
 
@@ -81,19 +81,19 @@ export function DocumentUploader({
       setUploadStatus('success')
 
       toast({
-        title: 'Tải lên thành công',
-        description: 'Tài liệu đã được tải lên và đang được xử lý',
+        title: 'Upload successful',
+        description: 'Documents uploaded and being processed',
       })
 
       if (onUploadComplete) {
         onUploadComplete(uploadedDocument)
       }
     } catch (error) {
-      console.error('Lỗi khi tải lên tài liệu:', error)
+      console.error('Error while uploading document:', error)
       setUploadStatus('error')
       toast({
-        title: 'Lỗi',
-        description: 'Không thể tải lên tài liệu',
+        title: 'Error',
+        description: 'Unable to upload document',
         variant: 'destructive',
       })
     } finally {
@@ -108,9 +108,9 @@ export function DocumentUploader({
           <div className="mb-4 p-3 bg-blue-50 rounded-md flex items-center gap-2">
             <Bot size={20} className="text-blue-500" />
             <div>
-              <p className="font-medium">Tải lên cho Bot: {selectedBot.name}</p>
+              <p className="font-medium">Upload for Bot: {selectedBot.name}</p>
               <p className="text-xs text-gray-500">
-                Tài liệu sẽ được liên kết với bot này
+                Documents will be linked to this bot
               </p>
             </div>
           </div>
@@ -128,24 +128,24 @@ export function DocumentUploader({
             {uploadStatus === 'success' ? (
               <div className="flex flex-col items-center gap-2 text-green-600">
                 <CheckCircle size={48} />
-                <p className="text-lg font-medium">Tải lên thành công!</p>
+                <p className="text-lg font-medium">Upload successful!</p>
               </div>
             ) : uploadStatus === 'error' ? (
               <div className="flex flex-col items-center gap-2 text-red-600">
                 <AlertCircle size={48} />
-                <p className="text-lg font-medium">Tải lên thất bại</p>
+                <p className="text-lg font-medium">Upload failed</p>
                 <p className="text-sm">
-                  Vui lòng thử lại hoặc chọn một tệp khác
+                  Please try again or choose another file
                 </p>
               </div>
             ) : (
               <>
                 <Upload size={48} className="text-gray-400" />
                 <div className="text-center">
-                  <p className="text-lg font-medium">Kéo và thả tệp vào đây</p>
-                  <p className="text-sm text-gray-500">Hoặc nhấp để chọn tệp</p>
+                  <p className="text-lg font-medium">Drag and drop a file here</p>
+                  <p className="text-sm text-gray-500">Or click to choose a file</p>
                   <p className="text-xs text-gray-400 mt-2">
-                    Hỗ trợ PDF, DOCX, TXT (tối đa 50MB)
+                    Supports PDF, DOCX, and TXT (up to 50 MB)
                   </p>
                 </div>
               </>
@@ -186,7 +186,7 @@ export function DocumentUploader({
                 onClick={handleUpload}
                 disabled={uploading}
               >
-                {uploading ? 'Đang tải lên...' : 'Tải lên'}
+                {uploading ? 'Uploading...' : 'Upload'}
               </Button>
             </div>
           )}

@@ -20,7 +20,7 @@ export function DocumentList({
   onDelete,
   onView,
   showBotInfo = false,
-  deleteLabel = "Xóa",
+  deleteLabel = "Delete",
 }: DocumentListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
@@ -51,7 +51,7 @@ export function DocumentList({
     })
   }
 
-  // Hàm để lấy tên file từ s3Key
+  // Get the file name from the s3Key
   const getFileType = (filename: string) => {
     const extension = filename.split(".").pop()?.toLowerCase() || ""
     return extension
@@ -63,7 +63,7 @@ export function DocumentList({
         <Card>
           <CardContent className="p-6 text-center text-gray-500">
             <FileText size={48} className="mx-auto mb-2 text-gray-300" />
-            <p>Chưa có tài liệu nào</p>
+            <p>No documents yet</p>
           </CardContent>
         </Card>
       ) : (
@@ -101,11 +101,11 @@ export function DocumentList({
               <CardContent className="border-t bg-gray-50 p-4">
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
-                    <p className="text-sm text-gray-500">Loại tệp</p>
+                    <p className="text-sm text-gray-500">File type</p>
                     <p className="font-medium">{getFileType(doc.filename)}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Ngày tạo</p>
+                    <p className="text-sm text-gray-500">Created date</p>
                     <p className="font-medium">{formatDate(doc.createdAt)}</p>
                   </div>
                   <div>

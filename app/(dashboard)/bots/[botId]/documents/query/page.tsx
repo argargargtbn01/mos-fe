@@ -4,8 +4,8 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {
-  title: "Hỏi đáp tài liệu",
-  description: "Đặt câu hỏi và nhận câu trả lời từ tài liệu của bạn",
+  title: "Document Q&A",
+  description: "Ask questions and receive answers from your documents",
 };
 
 function Loading() {
@@ -29,10 +29,10 @@ export default function DocumentQueryPage({ params }: any) {
   return (
     <div className="flex flex-col space-y-4 p-4 md:p-8 max-w-4xl mx-auto">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-2xl font-bold">Hỏi đáp tài liệu</h1>
+        <h1 className="text-2xl font-bold">Document Q&A</h1>
         <p className="text-muted-foreground">
-          Đặt câu hỏi về nội dung trong tài liệu đã upload và nhận câu trả lời
-          thông minh
+          Ask questions about uploaded documents and receive intelligent answers
+          intelligent
         </p>
       </div>
 

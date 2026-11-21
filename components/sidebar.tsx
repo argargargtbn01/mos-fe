@@ -12,29 +12,29 @@ import Image from "next/image";
 
 const menuItems = [
   { label: "CHAT BOT", type: "header" },
-  { label: "Quản trị", type: "subheader" },
-  { label: "Quản lý người dùng", icon: Users },
-  { label: "Quản lý phòng ban", icon: FileText },
+  { label: "Administration", type: "subheader" },
+  { label: "User Management", icon: Users },
+  { label: "Department Management", icon: FileText },
   {
-    label: "Quản lý BOT",
+    label: "Bot Management",
     icon: Bot,
     expanded: true,
     subItems: [
-      "Danh sách BOT",
-      "Danh sách BOT Channel",
-      "Danh sách BOT Token",
-      "Danh sách Data Source",
+      "Bot List",
+      "Bot Channel List",
+      "Bot Token List",
+      "Data Source List",
     ],
   },
-  { label: "Quản lý LLM Model", icon: BarChart2 },
-  { label: "Quản lý báo cáo", icon: FileText },
+  { label: "LLM Model Management", icon: BarChart2 },
+  { label: "Report Management", icon: FileText },
   { label: "Tools", icon: Tool },
-  { label: "Cấu hình", type: "header" },
+  { label: "Configuration", type: "header" },
   { label: "Chat setting", icon: MessageCircle },
   { label: "Document setting", icon: Settings },
   { label: "Test Bot", icon: Bot },
   { label: "Test Bot Batch", icon: MessageSquare },
-  { label: "Lịch sử chat", icon: MessageCircle },
+  { label: "Chat History", icon: MessageCircle },
 ];
 
 export default function Sidebar() {

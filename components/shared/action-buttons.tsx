@@ -24,7 +24,7 @@ export function ActionButtons({ onView, onEdit, onDelete, onLock, showLock = fal
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Khóa/Mở khóa</p>
+              <p>Lock/Unlock</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -39,7 +39,7 @@ export function ActionButtons({ onView, onEdit, onDelete, onLock, showLock = fal
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Chỉnh sửa</p>
+              <p>Edit</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -54,7 +54,7 @@ export function ActionButtons({ onView, onEdit, onDelete, onLock, showLock = fal
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Xem chi tiết</p>
+              <p>View details</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -69,7 +69,7 @@ export function ActionButtons({ onView, onEdit, onDelete, onLock, showLock = fal
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Xóa</p>
+              <p>Delete</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

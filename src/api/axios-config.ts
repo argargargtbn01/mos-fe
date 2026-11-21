@@ -5,10 +5,10 @@ const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://quang1709.ddns.net:30
 
 const axiosInstance = axios.create({
   baseURL,
-  // Không đặt Content-Type ở đây để cho axios tự xác định dựa trên dữ liệu gửi đi
+  // Do not set Content-Type here so Axios can determine it from the request data
 })
 
-// Request interceptor: Thêm token vào header nếu có
+// Request interceptor: Add token vào header nếu có
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token')
@@ -16,7 +16,7 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`
     }
 
-    // Chỉ thêm Content-Type: application/json nếu không phải FormData
+    // Only add Content-Type: application/json when the data is not FormData
     if (!(config.data instanceof FormData)) {
       config.headers['Content-Type'] = 'application/json'
     }
@@ -26,7 +26,7 @@ axiosInstance.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error)
 )
 
-// // Response interceptor: Trả về luôn dữ liệu từ response và xử lý lỗi 401
+// // Response interceptor: Return response data directly and handle 401 errors
 // axiosInstance.interceptors.response.use(
 //   (response: AxiosResponse) => response.data,
 //   (error: AxiosError) => {

@@ -13,15 +13,15 @@ export function BotDetailsView({ bot }: BotDetailsViewProps) {
   const [modelInfo, setModelInfo] = useState<ModelInfo | undefined>(bot.modelInfo)
 
   useEffect(() => {
-    // Nếu bot đã có modelInfo từ API, sử dụng nó
-    // Nếu không, gọi API để lấy thông tin model
+    // If the bot already has modelInfo from the API, use it
+    // Otherwise, call the API to get model information
     if (!bot.modelInfo && bot.modelName) {
       const fetchModelInfo = async () => {
         try {
           const info = await modelService.getModelByName(bot.modelName!)
           setModelInfo(info)
         } catch (error) {
-          console.error('Lỗi khi tải thông tin model:', error)
+          console.error('Error while loading information model:', error)
         }
       }
       fetchModelInfo()
@@ -31,19 +31,19 @@ export function BotDetailsView({ bot }: BotDetailsViewProps) {
   return (
     <Tabs defaultValue="info" className="w-full">
       <TabsList className="grid grid-cols-3 mb-4">
-        <TabsTrigger value="info">Thông tin chung</TabsTrigger>
+        <TabsTrigger value="info">General Information</TabsTrigger>
         <TabsTrigger value="prompt">Prompt</TabsTrigger>
         <TabsTrigger value="model">Model</TabsTrigger>
       </TabsList>
       <TabsContent value="info">
         <Card>
           <CardHeader>
-            <CardTitle>Thông tin Bot</CardTitle>
+            <CardTitle>Bot Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <h4 className="font-medium text-sm text-gray-500">Tên Bot</h4>
+                <h4 className="font-medium text-sm text-gray-500">Bot Name</h4>
                 <p>{bot.name}</p>
               </div>
               <div>
@@ -51,18 +51,18 @@ export function BotDetailsView({ bot }: BotDetailsViewProps) {
                 <p>{bot.slug}</p>
               </div>
               <div>
-                <h4 className="font-medium text-sm text-gray-500">Phòng ban</h4>
-                <p>{bot.department?.name || 'Không có phòng ban'}</p>
+                <h4 className="font-medium text-sm text-gray-500">Department</h4>
+                <p>{bot.department?.name || 'No department'}</p>
               </div>
               <div>
-                <h4 className="font-medium text-sm text-gray-500">Ngày tạo</h4>
+                <h4 className="font-medium text-sm text-gray-500">Created date</h4>
                 <p>{new Date(bot.created_at).toLocaleDateString('vi-VN')}</p>
               </div>
             </div>
 
             {bot.description && (
               <div>
-                <h4 className="font-medium text-sm text-gray-500">Mô tả</h4>
+                <h4 className="font-medium text-sm text-gray-500">Description</h4>
                 <p className="whitespace-pre-wrap">{bot.description}</p>
               </div>
             )}
@@ -81,7 +81,7 @@ export function BotDetailsView({ bot }: BotDetailsViewProps) {
                 {bot.prompt}
               </div>
             ) : (
-              <p className="text-gray-500 italic">Không có prompt</p>
+              <p className="text-gray-500 italic">No prompt</p>
             )}
             
             {bot.condensePrompt && (
@@ -99,7 +99,7 @@ export function BotDetailsView({ bot }: BotDetailsViewProps) {
       <TabsContent value="model">
         <Card>
           <CardHeader>
-            <CardTitle>Thông tin Model</CardTitle>
+            <CardTitle>Model Information</CardTitle>
           </CardHeader>
           <CardContent>
             <ModelInfoDisplay modelInfo={modelInfo} />

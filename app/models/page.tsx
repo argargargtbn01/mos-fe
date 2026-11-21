@@ -51,10 +51,10 @@ export default function ModelsPage() {
       const adaptedModels = modelInfos.map(adaptModelInfo)
       setModels(adaptedModels)
     } catch (error) {
-      console.error('Lỗi khi tải danh sách model:', error)
+      console.error('Error while loading list model:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể tải danh sách model',
+        title: 'Error',
+        description: 'Unable to load model list',
         variant: 'destructive',
       })
     } finally {
@@ -75,16 +75,16 @@ export default function ModelsPage() {
         },
       })
       toast({
-        title: 'Thành công',
-        description: 'Thêm model thành công',
+        title: 'Success',
+        description: 'Add Model successfully',
       })
       loadModels()
       return Promise.resolve()
     } catch (error) {
-      console.error('Lỗi khi thêm model:', error)
+      console.error('Error while adding model:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể thêm model',
+        title: 'Error',
+        description: 'Unable to add model',
         variant: 'destructive',
       })
       return Promise.reject(error)
@@ -107,16 +107,16 @@ export default function ModelsPage() {
         },
       })
       toast({
-        title: 'Thành công',
-        description: 'Cập nhật model thành công',
+        title: 'Success',
+        description: 'Update model successfully',
       })
       loadModels()
       return Promise.resolve()
     } catch (error) {
-      console.error('Lỗi khi cập nhật model:', error)
+      console.error('Error while updating model:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể cập nhật model',
+        title: 'Error',
+        description: 'Unable to update model',
         variant: 'destructive',
       })
       return Promise.reject(error)
@@ -124,19 +124,19 @@ export default function ModelsPage() {
   }
 
   const handleDeleteModel = async (model: LlmModel) => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa model "${model.name}"?`)) {
+    if (window.confirm(`Are you sure you want to delete model "${model.name}"?`)) {
       try {
         await modelService.delete(model.id)
         toast({
-          title: 'Thành công',
-          description: 'Xóa model thành công',
+          title: 'Success',
+          description: 'Delete model successfully',
         })
         loadModels()
       } catch (error) {
-        console.error('Lỗi khi xóa model:', error)
+        console.error('Error while deleting model:', error)
         toast({
-          title: 'Lỗi',
-          description: 'Không thể xóa model',
+          title: 'Error',
+          description: 'Unable to delete model',
           variant: 'destructive',
         })
       }
@@ -148,17 +148,17 @@ export default function ModelsPage() {
       const newStatus = model.status === 'Active' ? 'Inactive' : 'Active'
       // await modelService.toggleStatus(model.id, newStatus)
       toast({
-        title: 'Thành công',
-        description: `Model đã được ${
-          newStatus === 'Active' ? 'kích hoạt' : 'vô hiệu hóa'
+        title: 'Success',
+        description: `Model has been ${
+          newStatus === 'Active' ? 'activated' : 'deactivated'
         }`,
       })
       loadModels()
     } catch (error) {
-      console.error('Lỗi khi cập nhật trạng thái model:', error)
+      console.error('Error while updating model status:', error)
       toast({
-        title: 'Lỗi',
-        description: 'Không thể cập nhật trạng thái model',
+        title: 'Error',
+        description: 'Unable to update model status',
         variant: 'destructive',
       })
     }
@@ -167,25 +167,25 @@ export default function ModelsPage() {
   const modelFields: Field[] = [
     {
       name: 'name',
-      label: 'Tên Model',
+      label: 'Model Name',
       type: 'text',
       required: true,
     },
     {
       name: 'provider',
-      label: 'Nhà cung cấp',
+      label: 'Provider',
       type: 'text',
       required: true,
     },
     {
       name: 'type',
-      label: 'Loại',
+      label: 'Type',
       type: 'text',
       required: true,
     },
     {
       name: 'status',
-      label: 'Trạng thái',
+      label: 'Status',
       type: 'select',
       options: [
         { value: 'Active', label: 'Active' },
@@ -207,27 +207,27 @@ export default function ModelsPage() {
   const columns = [
     {
       key: 'name',
-      header: 'Tên Model',
+      header: 'Model Name',
       cell: (model: LlmModel) => model.name,
     },
     {
       key: 'provider',
-      header: 'Nhà cung cấp',
+      header: 'Provider',
       cell: (model: LlmModel) => model.provider,
     },
     {
       key: 'type',
-      header: 'Loại',
+      header: 'Type',
       cell: (model: LlmModel) => model.type,
     },
     {
       key: 'status',
-      header: 'Trạng thái',
+      header: 'Status',
       cell: (model: LlmModel) => <StatusBadge status={model.status} />,
     },
     {
       key: 'created_at',
-      header: 'Ngày tạo',
+      header: 'Created date',
       cell: (model: LlmModel) =>
         new Date(model.created_at).toLocaleDateString('vi-VN'),
     },
@@ -236,7 +236,7 @@ export default function ModelsPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="p-6">Đang tải dữ liệu...</div>
+        <div className="p-6">Loading data...</div>
       </MainLayout>
     )
   }
@@ -245,7 +245,7 @@ export default function ModelsPage() {
     <MainLayout>
       <div className="p-6">
         <EntityHeader
-          title="Danh sách LLM Model"
+          title="LLM Model List"
         />
 
         <DataTable
@@ -271,7 +271,7 @@ export default function ModelsPage() {
 
         {/* Add Model Dialog */}
         <CrudDialog
-          title="Thêm Model mới"
+          title="Add New Model"
           fields={modelFields}
           trigger={<div />} // Hidden trigger, using state to control
           onSubmit={handleAddModel}
@@ -282,7 +282,7 @@ export default function ModelsPage() {
         {/* Edit Model Dialog */}
         {selectedModel && (
           <CrudDialog
-            title={`Chỉnh sửa Model: ${selectedModel.name}`}
+            title={`Edit Model: ${selectedModel.name}`}
             fields={modelFields}
             initialData={{
               name: selectedModel.name,
@@ -304,7 +304,7 @@ export default function ModelsPage() {
         {/* View Model Dialog */}
         {selectedModel && (
           <CrudDialog
-            title={`Chi tiết Model: ${selectedModel.name}`}
+            title={`Model Details: ${selectedModel.name}`}
             fields={modelFields}
             initialData={{
               name: selectedModel.name,

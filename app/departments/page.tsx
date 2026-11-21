@@ -31,10 +31,10 @@ export default function DepartmentsPage() {
       const data = await departmentService.getAll()
       setDepartments(data)
     } catch (error) {
-      console.error("Lỗi khi tải danh sách phòng ban:", error)
+      console.error("Error while loading list department:", error)
       toast({
-        title: "Lỗi",
-        description: "Không thể tải danh sách phòng ban",
+        title: "Error",
+        description: "Unable to load department list",
         variant: "destructive",
       })
     } finally {
@@ -50,16 +50,16 @@ export default function DepartmentsPage() {
         active: data.active === "true",
       })
       toast({
-        title: "Thành công",
-        description: "Thêm phòng ban thành công",
+        title: "Success",
+        description: "Department added successfully",
       })
       loadDepartments()
       return Promise.resolve()
     } catch (error) {
-      console.error("Lỗi khi thêm phòng ban:", error)
+      console.error("Error while adding department:", error)
       toast({
-        title: "Lỗi",
-        description: "Không thể thêm phòng ban",
+        title: "Error",
+        description: "Unable to add department",
         variant: "destructive",
       })
       return Promise.reject(error)
@@ -76,16 +76,16 @@ export default function DepartmentsPage() {
         active: data.active === "true",
       })
       toast({
-        title: "Thành công",
-        description: "Cập nhật phòng ban thành công",
+        title: "Success",
+        description: "Department updated successfully",
       })
       loadDepartments()
       return Promise.resolve()
     } catch (error) {
-      console.error("Lỗi khi cập nhật phòng ban:", error)
+      console.error("Error while updating department:", error)
       toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật phòng ban",
+        title: "Error",
+        description: "Unable to update department",
         variant: "destructive",
       })
       return Promise.reject(error)
@@ -93,19 +93,19 @@ export default function DepartmentsPage() {
   }
 
   const handleDeleteDepartment = async (department: Department) => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa phòng ban "${department.name}"?`)) {
+    if (window.confirm(`Are you sure you want to delete department "${department.name}"?`)) {
       try {
         await departmentService.delete(department.id)
         toast({
-          title: "Thành công",
-          description: "Xóa phòng ban thành công",
+          title: "Success",
+          description: "Delete department successfully",
         })
         loadDepartments()
       } catch (error) {
-        console.error("Lỗi khi xóa phòng ban:", error)
+        console.error("Error while deleting department:", error)
         toast({
-          title: "Lỗi",
-          description: "Không thể xóa phòng ban",
+          title: "Error",
+          description: "Unable to delete department",
           variant: "destructive",
         })
       }
@@ -116,15 +116,15 @@ export default function DepartmentsPage() {
     try {
       await departmentService.toggleStatus(department.id, !department.active)
       toast({
-        title: "Thành công",
-        description: `Phòng ban đã được ${department.active ? "vô hiệu hóa" : "kích hoạt"}`,
+        title: "Success",
+        description: `Department was ${department.active ? "deactivated" : "activated"}`,
       })
       loadDepartments()
     } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái phòng ban:", error)
+      console.error("Error while updating department status:", error)
       toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật trạng thái phòng ban",
+        title: "Error",
+        description: "Unable to update department status",
         variant: "destructive",
       })
     }
@@ -133,23 +133,23 @@ export default function DepartmentsPage() {
   const departmentFields: Field[] = [
     {
       name: "name",
-      label: "Tên phòng ban",
+      label: "Department Name",
       type: "text",
       required: true,
     },
     {
       name: "code",
-      label: "Mã phòng ban",
+      label: "Department Code",
       type: "text",
       required: true,
     },
     {
       name: "active",
-      label: "Trạng thái",
+      label: "Status",
       type: "select",
       options: [
-        { value: "true", label: "Hoạt động" },
-        { value: "false", label: "Không hoạt động" },
+        { value: "true", label: "Active" },
+        { value: "false", label: "Inactive" },
       ],
     },
   ]
@@ -157,22 +157,22 @@ export default function DepartmentsPage() {
   const columns = [
     {
       key: "name",
-      header: "Tên phòng ban",
+      header: "Department Name",
       cell: (department: Department) => department.name,
     },
     {
       key: "code",
-      header: "Mã phòng ban",
+      header: "Department Code",
       cell: (department: Department) => department.code,
     },
     {
       key: "status",
-      header: "Trạng thái",
+      header: "Status",
       cell: (department: Department) => <StatusBadge status={department.active ? "Active" : "Inactive"} />,
     },
     {
       key: "created_at",
-      header: "Ngày tạo",
+      header: "Created date",
       cell: (department: Department) => new Date(department.created_at).toLocaleDateString("vi-VN"),
     },
   ]
@@ -180,7 +180,7 @@ export default function DepartmentsPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="p-6">Đang tải dữ liệu...</div>
+        <div className="p-6">Loading data...</div>
       </MainLayout>
     )
   }
@@ -189,8 +189,8 @@ export default function DepartmentsPage() {
     <MainLayout>
       <div className="p-6">
         <EntityHeader
-          title="Danh sách phòng ban"
-          addButtonLabel="Thêm phòng ban"
+          title="Department List"
+          addButtonLabel="Add Department"
           onAdd={() => setIsAddDialogOpen(true)}
         />
 
@@ -217,7 +217,7 @@ export default function DepartmentsPage() {
 
         {/* Add Department Dialog */}
         <CrudDialog
-          title="Thêm phòng ban mới"
+          title="Add New Department"
           fields={departmentFields}
           trigger={<div />} // Hidden trigger, using state to control
           onSubmit={handleAddDepartment}
@@ -228,7 +228,7 @@ export default function DepartmentsPage() {
         {/* Edit Department Dialog */}
         {selectedDepartment && (
           <CrudDialog
-            title={`Chỉnh sửa phòng ban: ${selectedDepartment.name}`}
+            title={`Edit Department: ${selectedDepartment.name}`}
             fields={departmentFields}
             initialData={{
               name: selectedDepartment.name,
@@ -245,7 +245,7 @@ export default function DepartmentsPage() {
         {/* View Department Dialog */}
         {selectedDepartment && (
           <CrudDialog
-            title={`Chi tiết phòng ban: ${selectedDepartment.name}`}
+            title={`Department Details: ${selectedDepartment.name}`}
             fields={departmentFields}
             initialData={{
               name: selectedDepartment.name,

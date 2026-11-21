@@ -13,9 +13,9 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       return "bg-green-100 text-green-800"
     } else if (statusLower === "inactive" || statusLower === "inactive") {
       return "bg-gray-100 text-gray-800"
-    } else if (statusLower === "pending" || statusLower === "chờ xử lý") {
+    } else if (statusLower === "pending" || statusLower === "pending") {
       return "bg-yellow-100 text-yellow-800"
-    } else if (statusLower === "suspended" || statusLower === "tạm ngưng") {
+    } else if (statusLower === "suspended" || statusLower === "suspended") {
       return "bg-red-100 text-red-800"
     }
 

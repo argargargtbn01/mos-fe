@@ -17,15 +17,15 @@ export default function LoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Kiểm tra nếu username = admin và password = admin
+    // Check if username = admin and password = admin
     if (username === "admin" && password === "admin") {
-      // Lưu thông tin đăng nhập vào localStorage
+      // Save login information to localStorage
       localStorage.setItem("user", JSON.stringify({ username, isLoggedIn: true }));
       
-      // Chuyển hướng đến trang users sau khi đăng nhập thành công
+      // Redirect to the users page after successful login
       router.push("/users");
     } else {
-      setError("Tên đăng nhập hoặc mật khẩu không đúng!");
+      setError("Incorrect username or password!");
     }
   };
 
@@ -33,9 +33,9 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Đăng nhập</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Sign in</CardTitle>
           <CardDescription className="text-center">
-            Nhập thông tin đăng nhập của bạn để tiếp tục
+            Enter your credentials to continue
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -46,39 +46,39 @@ export default function LoginPage() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="username">Tên đăng nhập</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
-                placeholder="Nhập tên đăng nhập"
+                placeholder="Enter username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Mật khẩu</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Nhập mật khẩu"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <Button type="submit" className="w-full">
-              Đăng nhập
+              Sign in
             </Button>
             <Button type="submit" className="w-full" color="blue" variant="outline">
-              Đăng nhập với Google
+              Sign in with Google
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-center text-gray-600">
-            Chưa có tài khoản?{" "}
+            Don't have an account?{" "}
             <Link href="/auth/register" className="text-blue-600 hover:underline">
-              Đăng ký
+              Sign up
             </Link>
           </p>
         </CardFooter>
